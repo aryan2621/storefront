@@ -8,9 +8,9 @@ export const Refunds: React.FC = () => (
     updated="November 2026"
     sections={[
       {
-        heading: '14-day refund',
+        heading: 'Refund window',
         body: [
-          'If a Pro licence does not meet your expectations, you can ask for a full refund within 14 days of purchase. No reason is required.',
+          'If a Pro licence does not meet your expectations, you can ask for a full refund within the refund window shown on the product page. No reason is required.',
           <>Email {SUPPORT_EMAIL} with:</>,
         ],
         list: [

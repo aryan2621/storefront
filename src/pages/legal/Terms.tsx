@@ -10,20 +10,20 @@ export const Terms: React.FC = () => (
       {
         heading: 'What you buy',
         body: [
-          'A Pro licence is a key for one app. A one-time purchase includes one year of updates for official builds. The version you bought stays usable after that; newer official builds need a renewed key to unlock Pro.',
+          'A Pro licence is a key for one app. A one-time purchase includes the update period shown on the product page for official builds. The version you bought stays usable after that; newer official builds need a renewed key to unlock Pro.',
           'The price and update period are shown on the product page before you pay. Prices are in INR.',
         ],
       },
       {
         heading: 'Keys and devices',
         body: [
-          'A key is checked with a signature and activated online on each device. Each product has a device limit shown on its page (Murmur and Capturita: 2 devices). You can free a seat by removing a device in your account or in the app, or by emailing support.',
+          'A key is checked with a signature and activated online on each device. Each product has a device limit shown on its page. You can free a seat by removing a device in your account or in the app, or by emailing support.',
           'The app re-checks about daily. If the licence service is unavailable, it allows up to 30 days since the last successful check for offline use. A key is for one person. Do not share or resell keys; shared keys can be revoked.',
         ],
       },
       {
         heading: 'Payments and refunds',
-        body: ['Payments are processed by Razorpay. This site does not receive or store card or UPI credentials. Refunds are available within 14 days; see the refund policy.'],
+        body: ['Payments are processed by Razorpay. This site does not receive or store card or UPI credentials. Refunds are available within the refund window shown on the product page; see the refund policy.'],
       },
       {
         heading: 'Use of the site',

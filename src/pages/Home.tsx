@@ -15,16 +15,16 @@ const faqs = [
     a: 'Payments are processed by Razorpay in INR. The methods you can use are shown at checkout.',
   },
   {
-    q: 'What does one year of updates mean?',
-    a: 'One-time purchases include twelve months of app updates from the purchase date. Builds released within your update period keep working with your key.',
+    q: 'How long do updates last?',
+    a: 'One-time purchases include a fixed update period, shown on the product page, counted from the purchase date. Builds released within your update period keep working with your key.',
   },
   {
     q: 'How many devices can I use?',
-    a: 'Each product sets its own limit; Murmur and Capturita allow 2 devices. You can remove a device from your account to move your key.',
+    a: 'Each product sets its own limit, shown on its page. You can remove a device from your account to move your key.',
   },
   {
     q: 'Can I get a refund?',
-    a: 'Yes — 14-day refund window. See the refund policy for details.',
+    a: 'Yes, within the refund window shown on the product page. See the refund policy for details.',
   },
 ];
 
@@ -32,7 +32,7 @@ const steps = [
   ['Pay', 'Pay in rupees through Razorpay. The price is shown before you pay.'],
   ['Get the key', 'Shown on screen the moment payment clears, emailed to you, and kept on your account page.'],
   ['Activate offline', 'Paste it in the app under Settings → License. The app registers your device and re-checks about daily.'],
-  ['Change your mind', 'Full refund within 14 days, no questions.'],
+  ['Change your mind', 'Full refund within the refund window, no questions.'],
 ] as const;
 
 export const Home: React.FC = () => {
