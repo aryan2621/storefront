@@ -20,7 +20,7 @@ export async function securityHeadersMiddleware(c: Context<{ Bindings: Env }>, n
   }
 }
 
-export async function rateLimitOrThrow(
+async function rateLimitOrThrow(
   env: Env,
   bindingName: 'CHECKOUT_LIMITER' | 'REFRESH_LIMITER',
   key: string
