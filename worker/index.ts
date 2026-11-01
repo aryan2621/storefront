@@ -15,6 +15,8 @@ import { signLicense, verifyLicense } from './license';
 import { createAdminRouter } from './admin';
 import { handleRazorpayWebhookRequest } from './webhooks';
 import { getCurrentUser } from './access';
+import { findCustomerId } from './customer';
+import { checkOrderToken, orderToken } from './crypto';
 import { fulfillSubscriptionCharge, subscriptionExpiresAt } from './subscriptions';
 import { verifyCancelToken } from './cancel-token';
 import { securityHeadersMiddleware, rateLimitOrThrow } from './security';
@@ -84,8 +86,11 @@ app.use('/api/*', cors());
 
 app.get('/api/products/:id', async (c) => {
   const id = c.req.param('id');
+  // Public: the landing sites read price and details from here, so return only fields that are safe to show.
   const product = await c.env.DB.prepare(
-    'SELECT * FROM products WHERE id = ? AND active = 1'
+    `SELECT id, name, tagline, description_md, kind, price_paise, period, updates_months, max_devices,
+            refund_window_days, download_url, image_url, landing_url
+     FROM products WHERE id = ? AND active = 1`
   ).bind(id).first();
   if (!product) {
     return c.json({ error: 'Product not found' }, 404);
@@ -103,37 +108,36 @@ app.get('/api/config/public', async (c) => {
 
 app.get('/api/orders/:id', async (c) => {
   const id = c.req.param('id');
-  if (!id.startsWith('ord_')) {
+  if (!id.startsWith('ord_') || !(await checkOrderToken(id, c.req.query('t') ?? '', c.env.ORDER_TOKEN_SECRET))) {
     return c.json({ error: 'Not found' }, 404);
   }
-  const order = await c.env.DB.prepare('SELECT o.id, o.status, o.product_id, p.landing_url FROM orders o JOIN products p ON p.id = o.product_id WHERE o.id = ?').bind(id).first<any>();
-  if (!order) {
-    return c.json({ error: 'Not found' }, 404);
-  }
+  const o = await c.env.DB.prepare(`
+    SELECT o.id, o.status, o.product_id, o.amount_paise, o.paid_at,
+           p.name AS product_name, p.download_url, p.landing_url,
+           cu.email, cu.name AS customer_name,
+           l.key, l.status AS license_status, pay.id AS payment_id
+    FROM orders o
+    JOIN products p ON p.id = o.product_id
+    JOIN customers cu ON cu.id = o.customer_id
+    LEFT JOIN licenses l ON l.source_id = o.id AND l.source_type = 'order'
+    LEFT JOIN payments pay ON pay.order_id = o.id
+    WHERE o.id = ?
+  `).bind(id).first<any>();
+  if (!o) return c.json({ error: 'Not found' }, 404);
 
-  let licenseKey: string | undefined;
-  let productName: string | undefined;
-  let downloadUrl: string | undefined;
-
-  if (order.status === 'paid') {
-    const lic = await c.env.DB.prepare(`
-      SELECT l.key, p.name, p.download_url
-      FROM licenses l JOIN products p ON l.product_id = p.id
-      WHERE l.source_id = ? AND l.status = 'active' LIMIT 1
-    `).bind(order.id).first<any>();
-    licenseKey = lic?.key;
-    productName = lic?.name;
-    downloadUrl = lic?.download_url;
-  }
-
+  const paid = o.status === 'paid';
   return c.json({
-    order_id: order.id,
-    status: order.status,
-    product_id: order.product_id,
-    license_key: licenseKey,
-    product_name: productName,
-    download_url: downloadUrl,
-    landing_url: order.landing_url ?? undefined,
+    order_id: o.id,
+    status: o.status,
+    refunded: paid && o.license_status === 'revoked',
+    product_id: o.product_id,
+    product_name: o.product_name,
+    license_key: paid && o.license_status === 'active' ? o.key : undefined,
+    download_url: o.download_url ?? undefined,
+    landing_url: o.landing_url ?? undefined,
+    receipt: paid
+      ? { order_id: o.id, payment_id: o.payment_id, email: o.email, name: o.customer_name, amount_paise: o.amount_paise, paid_at: o.paid_at }
+      : undefined,
   });
 });
 
@@ -169,6 +173,10 @@ app.post('/api/coupons/check', async (c) => {
 });
 
 app.post('/api/checkout', async (c) => {
+  if (!c.env.ORDER_TOKEN_SECRET) {
+    return c.json({ error: 'Checkout is not configured' }, 500);
+  }
+
   try {
     await rateLimitOrThrow(c.env, 'CHECKOUT_LIMITER', c.req.header('cf-connecting-ip') || 'anon');
   } catch {
@@ -297,6 +305,7 @@ app.post('/api/checkout', async (c) => {
 
   return c.json({
     order_id: orderId,
+    order_token: await orderToken(orderId, c.env.ORDER_TOKEN_SECRET!),
     razorpay_order_id: rzpOrderId,
     key_id: c.env.RAZORPAY_KEY_ID,
     amount: finalAmountPaise,
@@ -603,28 +612,28 @@ app.get('/api/me', async (c) => {
   });
 });
 
-app.get('/api/account/licenses', async (c) => {
+async function requireCustomer(c: any) {
   const user = await getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
-  if (!user) {
-    return c.json({ error: 'Not signed in' }, 401);
-  }
+  if (!user) return { error: c.json({ error: 'Not signed in' }, 401) };
+  // Every account route is scoped to this id, never to anything the browser sends.
+  return { user, customerId: await findCustomerId(c.env, user) };
+}
 
-  const customer = await c.env.DB.prepare('SELECT id FROM customers WHERE email = ?').bind(user.email).first<any>();
-  if (!customer) {
-    return c.json({ licenses: [], email: user.email, role: user.isAdmin ? 'admin' : 'customer' });
-  }
+app.get('/api/account/licenses', async (c) => {
+  const { user, customerId, error } = await requireCustomer(c);
+  if (error) return error;
+  const role = user!.isAdmin ? 'admin' : 'customer';
+  if (!customerId) return c.json({ licenses: [], email: user!.email, role });
 
   const licenses = await c.env.DB.prepare(`
     SELECT l.*, p.name as product_name, p.download_url, p.image_url, p.kind
-    FROM licenses l
-    JOIN products p ON p.id = l.product_id
-    WHERE l.customer_id = ?
-    ORDER BY l.issued_at DESC
-  `).bind(customer.id).all<any>();
+    FROM licenses l JOIN products p ON p.id = l.product_id
+    WHERE l.customer_id = ? ORDER BY l.issued_at DESC
+  `).bind(customerId).all<any>();
 
   return c.json({
-    email: user.email,
-    role: user.isAdmin ? 'admin' : 'customer',
+    email: user!.email,
+    role,
     licenses: licenses.results.map((row) => ({
       id: row.id,
       product_id: row.product_id,
@@ -644,50 +653,45 @@ app.get('/api/account/licenses', async (c) => {
   });
 });
 
-async function requireUser(c: any) {
-  return getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
-}
-
 app.get('/api/account/devices', async (c) => {
-  const user = await requireUser(c);
-  if (!user) return c.json({ error: 'Not signed in' }, 401);
+  const { customerId, error } = await requireCustomer(c);
+  if (error) return error;
+  if (!customerId) return c.json({ devices: [] });
   const rows = await c.env.DB.prepare(`
     SELECT a.id, a.device_name, a.activated_at, a.last_seen_at, l.id as license_id, p.name as product_name
     FROM activations a
     JOIN licenses l ON l.id = a.license_id
-    JOIN customers cu ON cu.id = l.customer_id
     JOIN products p ON p.id = l.product_id
-    WHERE cu.email = ? AND a.deactivated_at IS NULL
+    WHERE l.customer_id = ? AND a.deactivated_at IS NULL
     ORDER BY a.last_seen_at DESC
-  `).bind(user.email).all();
+  `).bind(customerId).all();
   return c.json({ devices: rows.results });
 });
 
 app.delete('/api/account/devices/:id', async (c) => {
-  const user = await requireUser(c);
-  if (!user) return c.json({ error: 'Not signed in' }, 401);
+  const { customerId, error } = await requireCustomer(c);
+  if (error) return error;
+  if (!customerId) return c.json({ error: 'Device not found' }, 404);
   const now = Math.floor(Date.now() / 1000);
-  // The join on the signed-in email is what stops one customer removing another's device.
+  // The customer filter is what stops one customer removing another's device.
   const res = await c.env.DB.prepare(`
     UPDATE activations SET deactivated_at = ?
-    WHERE id = ? AND deactivated_at IS NULL AND license_id IN (
-      SELECT l.id FROM licenses l JOIN customers cu ON cu.id = l.customer_id WHERE cu.email = ?
-    )
-  `).bind(now, c.req.param('id'), user.email).run();
+    WHERE id = ? AND deactivated_at IS NULL
+      AND license_id IN (SELECT id FROM licenses WHERE customer_id = ?)
+  `).bind(now, c.req.param('id'), customerId).run();
   if (!res.meta.changes) return c.json({ error: 'Device not found' }, 404);
   return c.json({ ok: true });
 });
 
 app.get('/api/account/receipts', async (c) => {
-  const user = await requireUser(c);
-  if (!user) return c.json({ error: 'Not signed in' }, 401);
+  const { customerId, error } = await requireCustomer(c);
+  if (error) return error;
+  if (!customerId) return c.json({ receipts: [] });
   const rows = await c.env.DB.prepare(`
     SELECT pay.id, pay.amount_paise, pay.refunded_paise, pay.status, pay.method, pay.created_at, p.name as product_name
-    FROM payments pay
-    JOIN customers cu ON cu.id = pay.customer_id
-    JOIN products p ON p.id = pay.product_id
-    WHERE cu.email = ? ORDER BY pay.created_at DESC
-  `).bind(user.email).all();
+    FROM payments pay JOIN products p ON p.id = pay.product_id
+    WHERE pay.customer_id = ? ORDER BY pay.created_at DESC
+  `).bind(customerId).all();
   return c.json({ receipts: rows.results });
 });
 

@@ -9,7 +9,7 @@ export const Postmark: React.FC<{
   waves?: boolean;
   className?: string;
   label?: string;
-}> = ({ top = 'STOREFRONT', middle = 'INR', bottom = 'OFFLINE KEYS', waves = false, className, label }) => {
+}> = ({ top = 'STOREFRONT', middle = 'INR', bottom = 'LICENCE KEYS', waves = false, className, label }) => {
   const id = useId();
   return (
     <svg

@@ -16,7 +16,7 @@ export const Footer: React.FC = () => (
       <div className="max-w-sm">
         <p className="font-extrabold">Storefront</p>
         <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-muted)]">
-          Pro licences for desktop apps. Pay in rupees; keys are checked offline.
+          Pro licences for desktop apps. Pay in rupees; keys are signed and verified in the app.
         </p>
         <p className="mt-4 font-mono text-xs text-[var(--color-muted)]">
           © {new Date().getFullYear()} · Payments via Razorpay

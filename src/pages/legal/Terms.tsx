@@ -1,48 +1,38 @@
 import React from 'react';
+import { LegalPage } from '../../components/LegalPage';
+import { SUPPORT_EMAIL } from '../../lib/site';
 
-export const Terms: React.FC = () => {
-  return (
-    <div className="mx-auto max-w-[68ch] space-y-8 px-4 py-10 leading-relaxed sm:px-6 sm:py-14">
-      <h1 className="text-[clamp(2.25rem,6vw,3.25rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">Terms and Conditions</h1>
-      <p className="font-mono text-[0.8125rem] text-[var(--color-muted)]">Last updated: October 2026</p>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">1. Introduction</h2>
-        <p>
-          Welcome to Aryan Storefront. By purchasing software, downloading release binaries, or obtaining a cryptographic license key from our platform, you agree to comply with and be bound by these terms.
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">2. License Grant</h2>
-        <p>
-          Each single-product license grants you a perpetual, non-exclusive, non-transferable license to use the designated application Pro features. You may activate and run the application on up to three (3) personal workstations or computers owned and operated exclusively by you.
-        </p>
-        <p>
-          Sharing, publishing, renting, or publicly redistributing digital license keys or signatures is strictly prohibited and constitutes grounds for immediate revocation.
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">3. Updates & Maintenance</h2>
-        <p>
-          One-time license purchases include access to every update released within twelve (12) months of the date of purchase. After this 12-month period expires, your license remains perpetually valid for all releases published within that period.
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">4. Offline Privacy</h2>
-        <p>
-          Our desktop applications verify your license key locally using an embedded Ed25519 public key; one-time licenses are checked without contacting our servers. Subscription licenses are renewed online when close to expiry.
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">5. Governing Law</h2>
-        <p>
-          These terms are governed by and construed in accordance with the laws of India. Any disputes arising out of these terms shall be subject to the exclusive jurisdiction of the courts located in Bengaluru, Karnataka, India.
-        </p>
-      </section>
-    </div>
-  );
-};
+export const Terms: React.FC = () => (
+  <LegalPage
+    title="Terms and Conditions"
+    updated="November 2026"
+    sections={[
+      {
+        heading: 'What you buy',
+        body: [
+          'A Pro licence is a key for one app. A one-time purchase includes one year of updates for official builds. The version you bought stays usable after that; newer official builds need a renewed key to unlock Pro.',
+          'The price and update period are shown on the product page before you pay. Prices are in INR.',
+        ],
+      },
+      {
+        heading: 'Keys and devices',
+        body: [
+          'A key is checked with a signature and activated online on each device. Each product has a device limit shown on its page (Murmur and Capturita: 2 devices). You can free a seat by removing a device in your account or in the app, or by emailing support.',
+          'The app re-checks about daily. If the licence service is unavailable, it allows up to 30 days since the last successful check for offline use. A key is for one person. Do not share or resell keys; shared keys can be revoked.',
+        ],
+      },
+      {
+        heading: 'Payments and refunds',
+        body: ['Payments are processed by Razorpay. This site does not receive or store card or UPI credentials. Refunds are available within 14 days; see the refund policy.'],
+      },
+      {
+        heading: 'Use of the site',
+        body: [
+          'Do not use the website or checkout to interfere with the service, evade payment, or submit someone else’s personal information. The website and its content are provided as-is, subject to applicable law.',
+          'These terms are governed by the laws of India.',
+        ],
+      },
+      { heading: 'Questions', body: [<>Questions about these terms or your purchase? Contact {SUPPORT_EMAIL}.</>] },
+    ]}
+  />
+);

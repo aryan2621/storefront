@@ -16,7 +16,7 @@ INSERT OR REPLACE INTO products (
   1,
   1,
   'https://github.com/aryan2621/orbit-ide',
-  'https://github.com/aryan2621/orbit-ide/releases/latest',
+  'https://github.com/aryan2621/downloads/releases?q=orbit',
   '/apps/orbit-ide/icon.webp',
   unixepoch()
 ),
@@ -33,7 +33,7 @@ INSERT OR REPLACE INTO products (
   1,
   2,
   'https://github.com/aryan2621/murmur',
-  'https://github.com/aryan2621/murmur/releases/latest',
+  'https://github.com/aryan2621/downloads/releases?q=murmur',
   '/apps/murmur/icon.webp',
   unixepoch()
 ),
@@ -67,7 +67,7 @@ INSERT OR REPLACE INTO products (
   1,
   4,
   'https://github.com/aryan2621/capturita',
-  'https://github.com/aryan2621/capturita/releases/latest',
+  'https://github.com/aryan2621/downloads/releases?q=capturita',
   '/apps/capturita/icon.webp',
   unixepoch()
 ),
@@ -156,3 +156,9 @@ INSERT OR REPLACE INTO products (
   '/apps/burrow/icon.webp',
   unixepoch()
 );
+
+-- Every app allows 2 devices, as Murmur and Capturita state on their own pricing pages.
+UPDATE products SET max_devices = 2;
+
+-- Subscriptions are not offered yet; AI Agents stays hidden until it has a one-time price.
+UPDATE products SET active = 0 WHERE id = 'ai-agents';

@@ -21,8 +21,7 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [state, setState] = useState('Karnataka');
-  const [gstin, setGstin] = useState('');
+  const [accepted, setAccepted] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
@@ -72,8 +71,6 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
         email: email.trim(),
         name: name.trim() || undefined,
         phone: phone.trim() || undefined,
-        state,
-        gstin: gstin.trim() || undefined,
         coupon: appliedCoupon?.code,
         turnstile_token: turnstileToken || undefined,
       });
@@ -84,11 +81,11 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
           setLoading(false);
           onOpenChange(false);
           if (verifyResult.licenseKey) {
-            navigate(`/success?o=${checkoutData.order_id}`, {
+            navigate(`/success?o=${checkoutData.order_id}&t=${checkoutData.order_token}`, {
               state: { result: verifyResult, orderId: checkoutData.order_id },
             });
           } else if (checkoutData.order_id) {
-            navigate(`/success?o=${checkoutData.order_id}`);
+            navigate(`/success?o=${checkoutData.order_id}&t=${checkoutData.order_token}`);
           } else {
             navigate('/success', { state: { result: verifyResult } });
           }
@@ -110,7 +107,7 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
         <DialogHeader>
           <DialogTitle>{product.name} Pro</DialogTitle>
           <p id="checkout-desc" className="text-[var(--color-muted)]">
-            Pay with UPI or card in Razorpay. Your licence key shows on the next screen, ready to download.
+            Pay in rupees through Razorpay. Your licence key shows on the next screen and is emailed to you.
           </p>
         </DialogHeader>
 
@@ -145,14 +142,6 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
                 <Input id="checkout-phone" type="tel" inputMode="tel" autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
             </div>
-            <div>
-              <Label htmlFor="checkout-state">State (for tax)</Label>
-              <Input id="checkout-state" value={state} onChange={(e) => setState(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="checkout-gstin">GSTIN (optional, businesses)</Label>
-              <Input id="checkout-gstin" value={gstin} onChange={(e) => setGstin(e.target.value)} />
-            </div>
           </fieldset>
 
           <div>
@@ -172,6 +161,15 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
               </p>
             )}
           </div>
+
+          <label className="flex items-start gap-2 text-sm">
+            <input type="checkbox" required checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1 h-4 w-4" />
+            <span>
+              I accept the{' '}
+              <a href="/terms" target="_blank" rel="noreferrer" className="underline">Terms</a> and{' '}
+              <a href="/refunds" target="_blank" rel="noreferrer" className="underline">Refund policy</a>.
+            </span>
+          </label>
 
           <div className="flex items-baseline justify-between border-t-2 border-[var(--color-foreground)] pt-3">
             <span className="font-semibold">Total due</span>

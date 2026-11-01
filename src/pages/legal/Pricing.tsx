@@ -49,12 +49,6 @@ export const Pricing: React.FC = () => {
                 <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;999</td>
                 <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
               </tr>
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">AI Agents</td>
-                <td className="py-2.5 px-3">Subscription</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;499/mo</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">Continuous</td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -63,7 +57,7 @@ export const Pricing: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-extrabold">2. Taxes & GST</h2>
         <p>
-          All prices are in Indian Rupees (INR). The amount shown at checkout is the amount you pay. Your licence key is shown after checkout and can be downloaded as a file.
+          All prices are in Indian Rupees (INR). The amount shown at checkout is the amount you pay. Your licence key is shown after checkout, emailed to you, and kept on your account page.
         </p>
       </section>
     </div>

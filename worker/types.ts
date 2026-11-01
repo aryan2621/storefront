@@ -12,8 +12,6 @@ export interface Env {
   ADMIN_EMAIL?: string;
   ADMIN_EMAILS?: string;
   SELLER_NAME: string;
-  SELLER_STATE: string;
-  SELLER_GSTIN?: string;
   CF_ACCESS_TEAM_DOMAIN?: string;
   CF_ACCESS_AUD?: string;
   ADMIN_DEV_BYPASS?: string;
@@ -28,6 +26,7 @@ export interface Env {
   RESEND_API_KEY?: string;
   BREVO_API_KEY?: string;
   CANCEL_TOKEN_SECRET?: string;
+  ORDER_TOKEN_SECRET?: string;
   TURNSTILE_SECRET?: string;
   [key: string]: any;
 }

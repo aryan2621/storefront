@@ -64,7 +64,7 @@ function extractEmailFromTokenPayload(payload: any): { email: string; verified: 
   return { email: directEmail, verified: isTrue(payload?.email_verified) };
 }
 
-async function verifyClerkSession(token: string | undefined, env: Env): Promise<{ email: string } | null> {
+async function verifyClerkSession(token: string | undefined, env: Env): Promise<{ email: string; userId?: string } | null> {
   if (!token || !env.CLERK_JWKS_URL) return null;
 
   try {
@@ -76,7 +76,7 @@ async function verifyClerkSession(token: string | undefined, env: Env): Promise<
     const { payload } = await jwtVerify(token, jwks, verifyOptions);
     const extracted = extractEmailFromTokenPayload(payload);
     if (!extracted || !extracted.verified) return null;
-    return { email: extracted.email };
+    return { email: extracted.email, userId: typeof payload.sub === 'string' ? payload.sub : undefined };
   } catch {
     return null;
   }
@@ -87,7 +87,7 @@ export async function getCurrentUser(
   cookieHeader?: string,
   authorizationHeader?: string,
   cfAccessJwt?: string
-): Promise<{ email: string; isAdmin: boolean } | null> {
+): Promise<{ email: string; userId?: string; isAdmin: boolean } | null> {
   const adminEmails = getConfiguredAdminEmails(env);
 
   if (env.ADMIN_DEV_BYPASS === 'true' && !isDeployedSiteUrl(env.SITE_URL)) {
@@ -100,7 +100,7 @@ export async function getCurrentUser(
   const clerkUser = await verifyClerkSession(sessionToken, env);
   if (clerkUser) {
     const email = clerkUser.email;
-    return { email, isAdmin: adminEmails.includes(email) };
+    return { email, userId: clerkUser.userId, isAdmin: adminEmails.includes(email) };
   }
 
   if (env.CF_ACCESS_AUD && env.CF_ACCESS_TEAM_DOMAIN) {

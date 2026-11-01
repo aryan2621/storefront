@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS products (
   price_paise INTEGER NOT NULL,              -- all money in paise
   period TEXT CHECK(period IN ('month', 'year', NULL)),
   razorpay_plan_id TEXT,
-  max_devices INTEGER NOT NULL DEFAULT 3,
+  max_devices INTEGER NOT NULL DEFAULT 2,
   offline_grace_days INTEGER NOT NULL DEFAULT 30,
   refund_window_days INTEGER NOT NULL DEFAULT 14,
   license_kid TEXT NOT NULL DEFAULT 'default',

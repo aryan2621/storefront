@@ -8,19 +8,19 @@ import { useSession } from '../lib/session';
 const faqs = [
   {
     q: 'How does offline licensing work?',
-    a: 'Each license is an Ed25519-signed payload. Your app verifies it locally with an embedded public key — no account server for one-time products.',
+    a: 'Each license is an Ed25519-signed key your app verifies on your device. Official builds also activate it online and re-check about daily, and keep working offline for up to 30 days.',
   },
   {
     q: 'Which payment methods are supported?',
-    a: 'UPI, Indian debit and credit cards, net banking, and wallets through Razorpay. Prices are in INR.',
+    a: 'Payments are processed by Razorpay in INR. The methods you can use are shown at checkout.',
   },
   {
     q: 'What does one year of updates mean?',
-    a: 'One-time purchases include twelve months of app updates from the purchase date. Older builds keep working offline forever.',
+    a: 'One-time purchases include twelve months of app updates from the purchase date. Builds released within your update period keep working with your key.',
   },
   {
     q: 'How many devices can I use?',
-    a: 'Personal licenses are honor-system for up to three machines you own.',
+    a: 'Each product sets its own limit; Murmur and Capturita allow 2 devices. You can remove a device from your account to move your key.',
   },
   {
     q: 'Can I get a refund?',
@@ -29,9 +29,9 @@ const faqs = [
 ];
 
 const steps = [
-  ['Pay', 'UPI, cards, net banking or wallets through Razorpay. Prices in rupees.'],
-  ['Get the key', 'Shown on screen the moment payment clears, with a button to download it as a file.'],
-  ['Activate offline', 'Paste it in the app under Settings → License. No account, no phone-home.'],
+  ['Pay', 'Pay in rupees through Razorpay. The price is shown before you pay.'],
+  ['Get the key', 'Shown on screen the moment payment clears, emailed to you, and kept on your account page.'],
+  ['Activate offline', 'Paste it in the app under Settings → License. The app registers your device and re-checks about daily.'],
   ['Change your mind', 'Full refund within 14 days, no questions.'],
 ] as const;
 
@@ -51,8 +51,9 @@ export const Home: React.FC = () => {
           <Postmark className="postmark-thump h-20 w-20 shrink-0 sm:h-24 sm:w-24" />
         </div>
         <p className="mt-4 max-w-2xl text-lg leading-snug text-[var(--color-muted)]">
-          Each desktop app keeps its own landing page. Storefront handles payment, key issuance, refunds, device slots,
-          and account recovery for that app only. Buy from the app&apos;s own page.
+          Each desktop app&apos;s own website shows what it does and lets you download it. When you click Buy there, you
+          come here to pay and get your licence key. Sign in with your purchase email to see your keys, manage your
+          devices and find your receipts.
         </p>
 
         {me ? (
@@ -86,7 +87,7 @@ export const Home: React.FC = () => {
               What you get
             </h2>
             <p className="mt-3 max-w-md text-[var(--color-muted)]">
-              Every app is free to download from GitHub. A Pro licence is a signed key for one app; one-time
+              Every app has a free version you can download from its own website. A Pro licence is a signed key for one app; one-time
               licences include a year of updates.
             </p>
           </div>

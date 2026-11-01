@@ -41,7 +41,6 @@
     "ADMIN_EMAIL": "risha2621@gmail.com",
     "ADMIN_EMAILS": "risha2621@gmail.com",
     "SELLER_NAME": "Rishabh Verma",
-    "SELLER_STATE": "Karnataka",
     "ADMIN_DEV_BYPASS": "false",
     "CLERK_ISSUER": "https://humble-cod-2507.clerk.accounts.dev",
     "CLERK_JWKS_URL": "https://humble-cod-2507.clerk.accounts.dev/.well-known/jwks.json"

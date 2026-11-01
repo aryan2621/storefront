@@ -229,11 +229,11 @@ export async function fulfillOrder(
     paymentId,
     licenseKey: signedKey,
     downloadUrl: product.download_url,
-    supportEmail: env.EMAIL_REPLY_TO || 'support@storefront.local',
+    supportEmail: env.EMAIL_REPLY_TO,
   });
 
   await sendEmail(env, {
-    from: env.EMAIL_FROM || 'Aryan <billing@storefront.local>',
+    from: env.EMAIL_FROM,
     to: customer.email,
     replyTo: env.EMAIL_REPLY_TO,
     subject: emailContent.subject,

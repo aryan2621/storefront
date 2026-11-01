@@ -18,6 +18,7 @@ export interface Product {
 
 export interface CheckoutResponse {
   order_id?: string;
+  order_token?: string;
   razorpay_order_id?: string;
   subscription_id?: string;
   razorpay_subscription_id?: string;
@@ -45,14 +46,25 @@ export interface VerifyResponse {
   subscription_id?: string;
 }
 
+export interface Receipt {
+  order_id: string;
+  payment_id: string | null;
+  email: string;
+  name: string | null;
+  amount_paise: number;
+  paid_at: number | null;
+}
+
 export interface OrderStatusResponse {
   order_id: string;
   status: string;
+  refunded: boolean;
   product_id: string;
-  license_key?: string;
   product_name?: string;
+  license_key?: string;
   download_url?: string;
   landing_url?: string;
+  receipt?: Receipt;
 }
 
 export async function fetchPublicConfig(): Promise<{ turnstile_site_key: string | null }> {
@@ -79,9 +91,9 @@ export async function fetchProduct(id: string): Promise<Product> {
   return data.product;
 }
 
-export async function fetchOrderStatus(orderId: string): Promise<OrderStatusResponse> {
-  const res = await fetch(`/api/orders/${orderId}`);
-  if (!res.ok) throw new Error('Order not found');
+export async function fetchOrderStatus(orderId: string, token: string): Promise<OrderStatusResponse> {
+  const res = await fetch(`/api/orders/${orderId}?t=${encodeURIComponent(token)}`);
+  if (!res.ok) throw new Error(String(res.status));
   return res.json();
 }
 
@@ -90,8 +102,6 @@ export async function createCheckout(params: {
   email: string;
   name?: string;
   phone?: string;
-  state?: string;
-  gstin?: string;
   coupon?: string;
   turnstile_token?: string;
 }): Promise<CheckoutResponse> {

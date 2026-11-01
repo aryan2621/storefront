@@ -1,3 +1,4 @@
+import { SELLER_NAME } from './site';
 import { CheckoutResponse, verifyPayment, VerifyResponse } from './api';
 
 declare global {
@@ -20,7 +21,7 @@ export function openRazorpayCheckout(
     key: checkoutData.key_id,
     amount: checkoutData.amount,
     currency: checkoutData.currency,
-    name: 'Aryan Storefront',
+    name: SELLER_NAME,
     description: checkoutData.name,
     prefill: checkoutData.prefill,
     theme: {

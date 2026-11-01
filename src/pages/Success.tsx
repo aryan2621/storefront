@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { Copy, Check, Download, FileDown, Loader2 } from 'lucide-react';
-import { fetchOrderStatus, VerifyResponse } from '../lib/api';
+import { Copy, Check, Download, FileDown, Loader2, Printer } from 'lucide-react';
+import { fetchOrderStatus, Receipt, VerifyResponse } from '../lib/api';
+import { formatINR, formatIST } from '../lib/format';
+import { SUPPORT_EMAIL } from '../lib/site';
 import { Postmark } from '../components/Postmark';
 import { Button } from '../components/ui/button';
 
@@ -10,46 +12,55 @@ const todayIST = () =>
     .toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: '2-digit' })
     .toUpperCase();
 
+type View = 'loading' | 'ready' | 'refunded' | 'invalid' | 'timeout';
+
 export const Success: React.FC = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('o');
+  const token = searchParams.get('t');
   const stateResult = (location.state as { result?: VerifyResponse })?.result;
 
   const [licenseKey, setLicenseKey] = useState(stateResult?.licenseKey || '');
   const [productName, setProductName] = useState(stateResult?.productName || '');
   const [downloadUrl, setDownloadUrl] = useState(stateResult?.downloadUrl || '');
   const [landingUrl, setLandingUrl] = useState('');
-  const [loading, setLoading] = useState(!!orderId && !stateResult?.licenseKey);
+  const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const [view, setView] = useState<View>(stateResult?.licenseKey ? 'ready' : orderId && token ? 'loading' : 'invalid');
   const [copied, setCopied] = useState(false);
 
+  // Polls the order until its key is issued. Even when the key arrived with the payment, one fetch fills in the receipt and the back link.
   useEffect(() => {
-    if (!orderId || stateResult?.licenseKey) return;
+    if (!orderId || !token) return;
     let attempts = 0;
+    let stopped = false;
     const poll = async () => {
       try {
-        const status = await fetchOrderStatus(orderId);
+        const status = await fetchOrderStatus(orderId, token);
+        if (stopped) return;
+        setProductName((n) => status.product_name || n);
+        setDownloadUrl((u) => status.download_url || u);
+        setLandingUrl(status.landing_url || '');
+        setReceipt(status.receipt ?? null);
+        if (status.refunded) return setView('refunded');
         if (status.license_key) {
           setLicenseKey(status.license_key);
-          setProductName(status.product_name || '');
-          setDownloadUrl(status.download_url || '');
-          setLandingUrl(status.landing_url || '');
-          setLoading(false);
-          return;
+          return setView('ready');
         }
-        if (status.status === 'paid' && attempts > 10) {
-          setLoading(false);
-          return;
-        }
-      } catch {
-        /* retry */
+        if (stateResult?.licenseKey) return;
+      } catch (err) {
+        // 404 means a wrong or expired link; anything else is a network blip, so retry.
+        if ((err as Error).message === '404') return setView('invalid');
       }
       attempts += 1;
       if (attempts < 15) setTimeout(poll, 2000);
-      else setLoading(false);
+      else if (!stateResult?.licenseKey) setView('timeout');
     };
     poll();
-  }, [orderId, stateResult?.licenseKey]);
+    return () => {
+      stopped = true;
+    };
+  }, [orderId, token, stateResult?.licenseKey]);
 
   const handleCopy = () => {
     if (!licenseKey) return;
@@ -58,7 +69,7 @@ export const Success: React.FC = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  // No email delivery yet, so the buyer keeps the key as a local file.
+  // Offer the key as a file too, in case the email is delayed.
   const handleDownloadKey = () => {
     const name = productName || 'licence';
     const text = [
@@ -81,7 +92,7 @@ export const Success: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  if (loading) {
+  if (view === 'loading') {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 px-4 text-center" role="status">
         <Loader2 className="h-8 w-8 animate-spin text-[var(--color-muted)]" aria-hidden />
@@ -94,10 +105,24 @@ export const Success: React.FC = () => {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
       <h1 className="text-[clamp(2.25rem,7vw,3.5rem)] font-extrabold leading-[0.95] tracking-[-0.035em]">
-        {productName ? `${productName} Pro is yours.` : 'Payment received.'}
+        {view === 'refunded'
+          ? 'This purchase was refunded.'
+          : view === 'invalid'
+            ? 'We can’t open this order.'
+            : productName
+              ? `${productName} Pro is yours.`
+              : 'Payment received.'}
       </h1>
 
-      {licenseKey ? (
+      {view === 'refunded' ? (
+        <p className="mt-6 max-w-prose leading-relaxed text-[var(--color-muted)]">
+          The refund was issued and the licence key no longer works. The app clears it at its next check. Questions? Email {SUPPORT_EMAIL}.
+        </p>
+      ) : view === 'invalid' ? (
+        <p className="mt-6 max-w-prose leading-relaxed text-[var(--color-muted)]">
+          This link is wrong or has expired. Your keys are safe: sign in with the email you bought with and open My licenses, or email {SUPPORT_EMAIL}.
+        </p>
+      ) : licenseKey ? (
         <>
           <div className="sheet relative mt-8 p-4 pt-14 sm:p-6 sm:pt-16">
             <Postmark
@@ -136,7 +161,7 @@ export const Success: React.FC = () => {
             {[
               downloadUrl ? 'Download and install the app, if you haven’t already.' : 'Open the app.',
               'Go to Settings → License and paste the key.',
-              'Pro unlocks immediately. The key is checked offline, nothing is sent anywhere.',
+              'Pro unlocks immediately. The app also registers this device so you can manage it from your account.',
             ].map((step, i) => (
               <li key={step} className="flex gap-4 border-b border-[var(--color-border)] py-3">
                 <span className="font-mono-price font-semibold text-[var(--color-muted)]">{i + 1}</span>
@@ -145,17 +170,34 @@ export const Success: React.FC = () => {
             ))}
           </ol>
           <p className="mt-4 text-sm text-[var(--color-muted)]">
-            We don&apos;t email keys, so download the file or copy the key now and keep it somewhere safe.
+            We also emailed this key to you, and it stays under My licenses when you sign in. Keep a copy somewhere safe too.
           </p>
         </>
       ) : (
         <p className="mt-6 max-w-prose leading-relaxed text-[var(--color-muted)]">
-          Your licence key is still being issued. Reload this page in a minute; it will show here once it&apos;s
-          ready. Keep this page&apos;s address, it is how you get back to your key.
+          Your payment went through but the key is taking longer than usual. Reload this page in a minute, or sign in and
+          open My licenses. If it still isn&apos;t there, email {SUPPORT_EMAIL} with your order ID{orderId ? ` (${orderId})` : ''}.
         </p>
       )}
 
-      <div className="mt-8 flex flex-col gap-2 sm:flex-row">
+      {receipt && view === 'ready' && (
+        <div className="sheet mt-8 p-4 text-sm sm:p-6">
+          <p className="font-semibold">Receipt</p>
+          <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+            <dt className="text-[var(--color-muted)]">Order</dt><dd className="font-mono">{receipt.order_id}</dd>
+            {receipt.payment_id && (<><dt className="text-[var(--color-muted)]">Payment</dt><dd className="font-mono">{receipt.payment_id}</dd></>)}
+            <dt className="text-[var(--color-muted)]">Product</dt><dd>{productName} Pro</dd>
+            <dt className="text-[var(--color-muted)]">Amount</dt><dd>{formatINR(receipt.amount_paise)}</dd>
+            {receipt.paid_at && (<><dt className="text-[var(--color-muted)]">Paid</dt><dd>{formatIST(receipt.paid_at)}</dd></>)}
+            <dt className="text-[var(--color-muted)]">Email</dt><dd>{receipt.email}</dd>
+          </dl>
+          <Button variant="outline" size="sm" className="mt-3 print:hidden" onClick={() => window.print()}>
+            <Printer className="h-4 w-4" aria-hidden /> Print receipt
+          </Button>
+        </div>
+      )}
+
+      <div className="mt-8 flex flex-col gap-2 sm:flex-row print:hidden">
         {downloadUrl && (
           <Button variant="outline" size="lg" asChild>
             <a href={downloadUrl} target="_blank" rel="noreferrer">
