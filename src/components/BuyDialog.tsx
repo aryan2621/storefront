@@ -9,6 +9,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { TurnstileWidget } from './TurnstileWidget';
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../lib/session';
 
 interface BuyDialogProps {
   product: Product | null;
@@ -18,7 +19,6 @@ interface BuyDialogProps {
 
 export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChange }) => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [accepted, setAccepted] = useState(false);
@@ -37,6 +37,8 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
   useEffect(() => {
     fetchPublicConfig().then((c) => setTurnstileSiteKey(c.turnstile_site_key));
   }, []);
+
+  const me = useSession().data;
 
   if (!product) return null;
 
@@ -59,16 +61,11 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
-      setError('Enter your email. Your licence is issued to it.');
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
       const checkoutData = await createCheckout({
         product_id: product.id,
-        email: email.trim(),
         name: name.trim() || undefined,
         phone: phone.trim() || undefined,
         coupon: appliedCoupon?.code,
@@ -120,18 +117,9 @@ export const BuyDialog: React.FC<BuyDialogProps> = ({ product, open, onOpenChang
         <form onSubmit={handleSubmit} className="space-y-4">
           <fieldset className="space-y-3 border-0 p-0">
             <legend className="sr-only">Contact</legend>
-            <div>
-              <Label htmlFor="checkout-email">Email for license delivery</Label>
-              <Input
-                id="checkout-email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+            <p className="text-sm text-[var(--color-muted)]">
+              Licence is issued to <strong>{me?.email}</strong>, the email you signed in with.
+            </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="checkout-name">Name (optional)</Label>

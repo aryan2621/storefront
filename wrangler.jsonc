@@ -42,6 +42,7 @@
     "ADMIN_EMAILS": "risha2621@gmail.com",
     "SELLER_NAME": "Rishabh Verma",
     "ADMIN_DEV_BYPASS": "false",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFu6zg6CZz61C4s2",
     "CLERK_ISSUER": "https://humble-cod-2507.clerk.accounts.dev",
     "CLERK_JWKS_URL": "https://humble-cod-2507.clerk.accounts.dev/.well-known/jwks.json"
   },

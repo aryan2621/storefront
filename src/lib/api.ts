@@ -92,20 +92,19 @@ export async function fetchProduct(id: string): Promise<Product> {
 }
 
 export async function fetchOrderStatus(orderId: string, token: string): Promise<OrderStatusResponse> {
-  const res = await fetch(`/api/orders/${orderId}?t=${encodeURIComponent(token)}`);
+  const res = await apiFetch(`/api/orders/${orderId}?t=${encodeURIComponent(token)}`);
   if (!res.ok) throw new Error(String(res.status));
   return res.json();
 }
 
 export async function createCheckout(params: {
   product_id: string;
-  email: string;
   name?: string;
   phone?: string;
   coupon?: string;
   turnstile_token?: string;
 }): Promise<CheckoutResponse> {
-  const res = await fetch('/api/checkout', {
+  const res = await apiFetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -122,7 +121,7 @@ export async function verifyPayment(params: {
   razorpay_signature: string;
   razorpay_subscription_id?: string;
 }): Promise<VerifyResponse> {
-  const res = await fetch('/api/verify', {
+  const res = await apiFetch('/api/verify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -140,7 +139,7 @@ export async function checkCoupon(productId: string, code: string): Promise<{
   amount_off_paise?: number;
   error?: string;
 }> {
-  const res = await fetch('/api/coupons/check', {
+  const res = await apiFetch('/api/coupons/check', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ product_id: productId, code }),

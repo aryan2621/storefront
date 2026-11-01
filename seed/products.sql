@@ -1,6 +1,6 @@
 -- seed/products.sql: Initial catalog for Storefront
 
-INSERT OR REPLACE INTO products (
+INSERT INTO products (
   id, name, tagline, description_md, kind, price_paise, period, razorpay_plan_id, updates_months, active, sort, repo_url, download_url, image_url, created_at
 ) VALUES
 (
@@ -155,7 +155,21 @@ INSERT OR REPLACE INTO products (
   'https://github.com/aryan2621/burrow',
   '/apps/burrow/icon.webp',
   unixepoch()
-);
+)
+ON CONFLICT(id) DO UPDATE SET
+  name = excluded.name,
+  tagline = excluded.tagline,
+  description_md = excluded.description_md,
+  kind = excluded.kind,
+  price_paise = excluded.price_paise,
+  period = excluded.period,
+  razorpay_plan_id = excluded.razorpay_plan_id,
+  updates_months = excluded.updates_months,
+  active = excluded.active,
+  sort = excluded.sort,
+  repo_url = excluded.repo_url,
+  download_url = excluded.download_url,
+  image_url = excluded.image_url;
 
 -- Every app allows 2 devices, as Murmur and Capturita state on their own pricing pages.
 UPDATE products SET max_devices = 2;

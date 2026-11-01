@@ -22,7 +22,7 @@ export const Delivery: React.FC = () => {
         <ul className="list-disc list-inside space-y-1">
           <li><strong>On-Screen Display:</strong> Your license key and the app download link are shown on the payment success screen.</li>
           <li><strong>Key File:</strong> The success screen lets you download your license key as a text file to keep.</li>
-          <li><strong>Email and account:</strong> The key is also emailed to your purchase email, and you can find it any time under My licenses after signing in with that email.</li>
+          <li><strong>Email and account:</strong> You sign in to buy. The key is emailed to your account email and always available under My licenses.</li>
         </ul>
       </section>
 

@@ -4,6 +4,7 @@ import { Copy, Check, Download, FileDown, Loader2, Printer } from 'lucide-react'
 import { fetchOrderStatus, Receipt, VerifyResponse } from '../lib/api';
 import { formatINR, formatIST } from '../lib/format';
 import { SUPPORT_EMAIL } from '../lib/site';
+import { printReceipt } from '../lib/printReceipt';
 import { Postmark } from '../components/Postmark';
 import { Button } from '../components/ui/button';
 
@@ -191,7 +192,10 @@ export const Success: React.FC = () => {
             {receipt.paid_at && (<><dt className="text-[var(--color-muted)]">Paid</dt><dd>{formatIST(receipt.paid_at)}</dd></>)}
             <dt className="text-[var(--color-muted)]">Email</dt><dd>{receipt.email}</dd>
           </dl>
-          <Button variant="outline" size="sm" className="mt-3 print:hidden" onClick={() => window.print()}>
+          <Button variant="outline" size="sm" className="mt-3 print:hidden" onClick={() => printReceipt({
+            paymentId: receipt.payment_id ?? receipt.order_id, orderId: receipt.order_id, paidAt: receipt.paid_at,
+            email: receipt.email, name: receipt.name, product: productName, amountPaise: receipt.amount_paise, status: 'Paid',
+          })}>
             <Printer className="h-4 w-4" aria-hidden /> Print receipt
           </Button>
         </div>

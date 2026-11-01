@@ -14,12 +14,12 @@ function envString(env: Env, name: string): string | undefined {
 
 export async function resolveProductPublicKey(env: Env, productId: string): Promise<string | null> {
   const suffix = productEnvSuffix(productId);
-  return envString(env, `LICENSE_PUBLIC_KEY_${suffix}`) || envString(env, `LICENSE_KEY_PUBLIC_${suffix}`) || null;
+  return envString(env, `LICENSE_PUBLIC_KEY_${suffix}`) || envString(env, `LICENSE_KEY_PUBLIC_${suffix}`) || envString(env, 'LICENSE_PUBLIC_KEY') || null; // shared key for all products unless one has its own
 }
 
 export async function resolveProductPrivateKey(env: Env, productId: string): Promise<string | null> {
   const suffix = productEnvSuffix(productId);
-  return envString(env, `LICENSE_KEY_${suffix}`) || envString(env, `LICENSE_PRIVATE_KEY_${suffix}`) || null;
+  return envString(env, `LICENSE_KEY_${suffix}`) || envString(env, `LICENSE_PRIVATE_KEY_${suffix}`) || envString(env, 'LICENSE_KEY') || null;
 }
 
 export async function createActivationToken(

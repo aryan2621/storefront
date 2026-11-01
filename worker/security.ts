@@ -34,3 +34,15 @@ export async function rateLimitOrThrow(
     throw new Error('RATE_LIMITED');
   }
 }
+
+/** Per-IP rate limit as route middleware; `scope` keeps each route's counter separate. */
+export const rateLimit =
+  (bindingName: 'CHECKOUT_LIMITER' | 'REFRESH_LIMITER', scope: string) =>
+  async (c: Context, next: Next) => {
+    try {
+      await rateLimitOrThrow(c.env, bindingName, `${scope}:${c.req.header('cf-connecting-ip') || 'anon'}`);
+    } catch {
+      return c.json({ error: 'Too many requests' }, 429);
+    }
+    await next();
+  };

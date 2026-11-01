@@ -52,7 +52,7 @@ export const Home: React.FC = () => {
         </div>
         <p className="mt-4 max-w-2xl text-lg leading-snug text-[var(--color-muted)]">
           Each desktop app&apos;s own website shows what it does and lets you download it. When you click Buy there, you
-          come here to pay and get your licence key. Sign in with your purchase email to see your keys, manage your
+          come here to pay and get your licence key. Sign in to buy; the licence goes to your account email. Signed in, you can see your keys, manage your
           devices and find your receipts.
         </p>
 

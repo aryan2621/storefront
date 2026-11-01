@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { AuthControls } from '../components/AuthControls';
 import { Button } from '../components/ui/button';
 import { formatINR, formatIST } from '../lib/format';
+import { printReceipt } from '../lib/printReceipt';
+import { useSession } from '../lib/session';
 
 interface AccountLicense {
   id: string;
@@ -45,6 +47,7 @@ function formatDate(ts?: number | null) {
 }
 
 export const Account: React.FC = () => {
+  const me = useSession().data;
   const query = useQuery({
     queryKey: ['account-licenses'],
     queryFn: fetchAccountLicenses,
@@ -168,7 +171,10 @@ export const Account: React.FC = () => {
               <p className="font-semibold">{r.product_name} · {formatINR(r.amount_paise)}</p>
               <p className="text-[var(--color-muted)]">{formatIST(r.created_at)} · {r.status} · {r.id}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => window.print()}>Print</Button>
+            <Button variant="outline" size="sm" onClick={() => printReceipt({
+              paymentId: r.id, paidAt: r.created_at, email: me?.email ?? '', product: r.product_name,
+              amountPaise: r.amount_paise, refundedPaise: r.refunded_paise, status: r.status,
+            })}>Print</Button>
           </div>
         ))}
         {receipts.data?.receipts.length === 0 && <p className="py-3 text-sm text-[var(--color-muted)]">No payments yet.</p>}

@@ -20,11 +20,13 @@ const publicKeyBase64 = publicKey.export({
 const spkiDer = publicKey.export({ type: 'spki', format: 'der' });
 const rawPublicKeyBase64 = spkiDer.subarray(spkiDer.length - 32).toString('base64');
 
-const suffix = (process.argv[2] || 'PRODUCT_ID').replace(/[^a-zA-Z0-9_]/g, '_').toUpperCase();
-console.log(`=== Ed25519 keypair for product ${suffix} ===`);
-console.log(`\nLICENSE_KEY_${suffix} (PKCS8 base64, secret: back up to the vault):`);
+// No argument = the shared key used by every product. Pass a product id for a product-specific key.
+const arg = process.argv[2]?.replace(/[^a-zA-Z0-9_]/g, '_').toUpperCase();
+const suffix = arg ? `_${arg}` : '';
+console.log(`=== Ed25519 keypair (${arg ? `product ${arg}` : 'shared, all products'}) ===`);
+console.log(`\nLICENSE_KEY${suffix} (PKCS8 base64, secret: back up to the vault):`);
 console.log(privateKeyBase64);
-console.log(`\nLICENSE_PUBLIC_KEY_${suffix} (SPKI base64):`);
+console.log(`\nLICENSE_PUBLIC_KEY${suffix} (SPKI base64):`);
 console.log(publicKeyBase64);
 console.log('\nRaw 32-byte public key (embed in the desktop app build):');
 console.log(rawPublicKeyBase64);

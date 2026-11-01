@@ -19,7 +19,7 @@ import { findCustomerId } from './customer';
 import { checkOrderToken, orderToken } from './crypto';
 import { fulfillSubscriptionCharge, subscriptionExpiresAt } from './subscriptions';
 import { verifyCancelToken } from './cancel-token';
-import { securityHeadersMiddleware, rateLimitOrThrow } from './security';
+import { securityHeadersMiddleware, rateLimit } from './security';
 import { verifyTurnstile } from './turnstile';
 import { runScheduledJobs } from './cron';
 import {
@@ -47,6 +47,12 @@ function parseAllowedOrigins(raw: string | null | undefined): string[] {
     .split(/[\r\n,]+/)
     .map((value) => value.trim())
     .filter(Boolean);
+}
+
+/** Every non-public route starts here: a verified sign-in, or a 401. */
+async function requireUser(c: any) {
+  const user = await getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
+  return user ? { user } : { error: c.json({ error: 'Sign in required' }, 401) };
 }
 
 function validateProductOrigin(product: any, request: Request, env: Env): boolean {
@@ -107,12 +113,14 @@ app.get('/api/config/public', async (c) => {
 });
 
 app.get('/api/orders/:id', async (c) => {
+  const { user, error: authError } = await requireUser(c);
+  if (authError) return authError;
   const id = c.req.param('id');
   if (!id.startsWith('ord_') || !(await checkOrderToken(id, c.req.query('t') ?? '', c.env.ORDER_TOKEN_SECRET))) {
     return c.json({ error: 'Not found' }, 404);
   }
   const o = await c.env.DB.prepare(`
-    SELECT o.id, o.status, o.product_id, o.amount_paise, o.paid_at,
+    SELECT o.id, o.customer_id, o.status, o.product_id, o.amount_paise, o.paid_at,
            p.name AS product_name, p.download_url, p.landing_url,
            cu.email, cu.name AS customer_name,
            l.key, l.status AS license_status, pay.id AS payment_id
@@ -123,7 +131,8 @@ app.get('/api/orders/:id', async (c) => {
     LEFT JOIN payments pay ON pay.order_id = o.id
     WHERE o.id = ?
   `).bind(id).first<any>();
-  if (!o) return c.json({ error: 'Not found' }, 404);
+  // The signed link is not enough: the order must belong to the signed-in account.
+  if (!o || o.customer_id !== (await findCustomerId(c.env, user!))) return c.json({ error: 'Not found' }, 404);
 
   const paid = o.status === 'paid';
   return c.json({
@@ -141,7 +150,9 @@ app.get('/api/orders/:id', async (c) => {
   });
 });
 
-app.post('/api/coupons/check', async (c) => {
+app.post('/api/coupons/check', rateLimit('CHECKOUT_LIMITER', 'coupon'), async (c) => {
+  const { error: authError } = await requireUser(c);
+  if (authError) return authError;
   const body = await c.req.json();
   const parsed = couponCheckSchema.safeParse(body);
   if (!parsed.success) {
@@ -172,16 +183,15 @@ app.post('/api/coupons/check', async (c) => {
   });
 });
 
-app.post('/api/checkout', async (c) => {
+app.post('/api/checkout', rateLimit('CHECKOUT_LIMITER', 'checkout'), async (c) => {
   if (!c.env.ORDER_TOKEN_SECRET) {
     return c.json({ error: 'Checkout is not configured' }, 500);
   }
 
-  try {
-    await rateLimitOrThrow(c.env, 'CHECKOUT_LIMITER', c.req.header('cf-connecting-ip') || 'anon');
-  } catch {
-    return c.json({ error: 'Too many requests' }, 429);
-  }
+  // Buying needs a signed-in account; the licence goes to the verified email, never to one typed in the form.
+  const { user, error: authError } = await requireUser(c);
+  if (authError) return authError;
+  const email = user!.email;
 
   const body = await c.req.json();
   const parsed = checkoutSchema.safeParse(body);
@@ -189,7 +199,7 @@ app.post('/api/checkout', async (c) => {
     return c.json({ error: parsed.error.errors[0].message }, 400);
   }
 
-  const { product_id, email, name, phone, state, gstin, coupon, turnstile_token } = parsed.data;
+  const { product_id, name, phone, state, gstin, coupon, turnstile_token } = parsed.data;
   const turnstileOk = await verifyTurnstile(turnstile_token, c.env.TURNSTILE_SECRET, c.req.header('cf-connecting-ip'));
   if (!turnstileOk) {
     return c.json({ error: 'Bot verification failed' }, 403);
@@ -201,6 +211,15 @@ app.post('/api/checkout', async (c) => {
 
   if (!product) {
     return c.json({ error: 'Product not found' }, 404);
+  }
+
+  // Stops one email from piling up unpaid orders (each one creates a Razorpay order).
+  const pending = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM orders o JOIN customers cu ON cu.id = o.customer_id
+     WHERE cu.email = ? AND o.status = 'created' AND o.created_at > ?`
+  ).bind(email.toLowerCase(), Math.floor(Date.now() / 1000) - 3600).first<{ n: number }>();
+  if ((pending?.n ?? 0) >= 5) {
+    return c.json({ error: 'Too many unpaid orders for this email. Try again in an hour.' }, 429);
   }
 
   if (!validateProductOrigin(product, c.req.raw, c.env)) {
@@ -226,13 +245,17 @@ app.post('/api/checkout', async (c) => {
   }
 
   const now = Math.floor(Date.now() / 1000);
-  let customer = await c.env.DB.prepare('SELECT id FROM customers WHERE email = ?').bind(email).first<any>();
-  let customerId = customer?.id;
+  let customerId = await findCustomerId(c.env, user!);
   if (!customerId) {
     customerId = `cust_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    await c.env.DB.prepare(
-      'INSERT INTO customers (id, email, name, phone, state, gstin, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).bind(customerId, email, name || null, phone || null, state || null, gstin || null, now).run();
+    try {
+      await c.env.DB.prepare(
+        'INSERT INTO customers (id, email, name, phone, state, gstin, clerk_user_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(customerId, email, name || null, phone || null, state || null, gstin || null, user!.userId ?? null, now).run();
+    } catch {
+      // The email already belongs to a customer linked to a different sign-in.
+      return c.json({ error: 'This email is already linked to another account.' }, 409);
+    }
   } else {
     await c.env.DB.prepare(`
       UPDATE customers SET
@@ -317,7 +340,9 @@ app.post('/api/checkout', async (c) => {
   });
 });
 
-app.post('/api/verify', async (c) => {
+app.post('/api/verify', rateLimit('CHECKOUT_LIMITER', 'verify'), async (c) => {
+  const { error: authError } = await requireUser(c);
+  if (authError) return authError;
   const body = await c.req.json();
   const parsed = verifySchema.safeParse(body);
   if (!parsed.success) {
@@ -379,13 +404,7 @@ app.post('/api/webhooks/razorpay', async (c) => {
   return handleRazorpayWebhookRequest(c.env, rawBody, signature, eventId);
 });
 
-app.post('/api/license/refresh', async (c) => {
-  try {
-    await rateLimitOrThrow(c.env, 'REFRESH_LIMITER', c.req.header('cf-connecting-ip') || 'anon');
-  } catch {
-    return c.json({ error: 'Too many requests' }, 429);
-  }
-
+app.post('/api/license/refresh', rateLimit('REFRESH_LIMITER', 'refresh'), async (c) => {
   const body = await c.req.json();
   const parsed = refreshLicenseSchema.safeParse(body);
   if (!parsed.success) {
@@ -561,24 +580,12 @@ async function handleLicenseDeactivation(c: Context<{ Bindings: Env; Variables: 
   return c.json({ ok: true, deactivated: true, activation_id: row.id });
 }
 
-app.post('/api/licenses/activate', async (c) => {
-  try {
-    await rateLimitOrThrow(c.env, 'REFRESH_LIMITER', c.req.header('cf-connecting-ip') || 'anon');
-  } catch {
-    return c.json({ error: 'Too many requests' }, 429);
-  }
-
+app.post('/api/licenses/activate', rateLimit('REFRESH_LIMITER', 'activate'), async (c) => {
   const body = await c.req.json();
   return handleLicenseActivation(c, body);
 });
 
-app.post('/api/licenses/deactivate', async (c) => {
-  try {
-    await rateLimitOrThrow(c.env, 'REFRESH_LIMITER', c.req.header('cf-connecting-ip') || 'anon');
-  } catch {
-    return c.json({ error: 'Too many requests' }, 429);
-  }
-
+app.post('/api/licenses/deactivate', rateLimit('REFRESH_LIMITER', 'deactivate'), async (c) => {
   const body = await c.req.json();
   return handleLicenseDeactivation(c, body);
 });
@@ -613,10 +620,10 @@ app.get('/api/me', async (c) => {
 });
 
 async function requireCustomer(c: any) {
-  const user = await getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
-  if (!user) return { error: c.json({ error: 'Not signed in' }, 401) };
+  const { user, error } = await requireUser(c);
+  if (error) return { error };
   // Every account route is scoped to this id, never to anything the browser sends.
-  return { user, customerId: await findCustomerId(c.env, user) };
+  return { user: user!, customerId: await findCustomerId(c.env, user!) };
 }
 
 app.get('/api/account/licenses', async (c) => {

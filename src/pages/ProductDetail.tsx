@@ -5,12 +5,14 @@ import { ArrowLeft, Download } from 'lucide-react';
 import { fetchProduct } from '../lib/api';
 import { formatINR } from '../lib/format';
 import { BuyDialog } from '../components/BuyDialog';
+import { useRequireSignIn } from '../lib/session';
 import { StampFace, priceSuffix } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 
 export const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [buyOpen, setBuyOpen] = useState(false);
+  const requireSignIn = useRequireSignIn();
 
   const { data: product, isLoading, error } = useQuery({
     queryKey: ['product', slug],
@@ -74,7 +76,7 @@ export const ProductDetail: React.FC = () => {
               </p>
               <p className="mt-1 text-[var(--color-muted)]">{terms}</p>
               <div className="mt-5 hidden flex-wrap gap-3 md:flex">
-                <Button size="lg" onClick={() => setBuyOpen(true)}>
+                <Button size="lg" onClick={() => requireSignIn(() => setBuyOpen(true))}>
                   Buy {product.name} Pro
                 </Button>
                 {product.download_url && (
@@ -110,7 +112,7 @@ export const ProductDetail: React.FC = () => {
             </span>
             <span className="block truncate text-sm text-[var(--color-muted)]">{terms}</span>
           </p>
-          <Button size="lg" onClick={() => setBuyOpen(true)}>
+          <Button size="lg" onClick={() => requireSignIn(() => setBuyOpen(true))}>
             Buy Pro
           </Button>
         </div>

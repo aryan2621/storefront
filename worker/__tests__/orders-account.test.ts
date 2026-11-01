@@ -53,14 +53,16 @@ describe('order token', () => {
 });
 
 describe('GET /api/orders/:id', () => {
-  it('returns 404 without a valid token, so an order id alone reveals nothing', async () => {
-    expect((await call('/api/orders/ord_1')).status).toBe(404);
-    expect((await call('/api/orders/ord_1?t=1.abc')).status).toBe(404);
+  it('needs a sign-in, a valid token and ownership', async () => {
+    const t = await orderToken('ord_1', SECRET);
+    expect((await call(`/api/orders/ord_1?t=${t}`)).status).toBe(401);
+    expect((await authed('/api/orders/ord_1', 'userA')).status).toBe(404);
+    expect((await authed('/api/orders/ord_1?t=1.abc', 'userA')).status).toBe(404);
   });
 
   it('returns the key, receipt and links with a valid token', async () => {
     const t = await orderToken('ord_1', SECRET);
-    const body = (await (await call(`/api/orders/ord_1?t=${t}`)).json()) as any;
+    const body = (await (await authed(`/api/orders/ord_1?t=${t}`, 'userA')).json()) as any;
     expect(body.license_key).toBe('KEY.SIG');
     expect(body.receipt).toMatchObject({ payment_id: 'pay_1', email: 'buyer@example.com', amount_paise: 10000 });
     expect(body.landing_url).toBe('https://demo.example.com');
@@ -70,7 +72,7 @@ describe('GET /api/orders/:id', () => {
   it('reports a refunded order and hides its key', async () => {
     await env.DB.prepare("UPDATE licenses SET status = 'revoked' WHERE id = 'lic_1'").run();
     const t = await orderToken('ord_1', SECRET);
-    const body = (await (await call(`/api/orders/ord_1?t=${t}`)).json()) as any;
+    const body = (await (await authed(`/api/orders/ord_1?t=${t}`, 'userA')).json()) as any;
     expect(body.refunded).toBe(true);
     expect(body.license_key).toBeUndefined();
     await env.DB.prepare("UPDATE licenses SET status = 'active' WHERE id = 'lic_1'").run();
@@ -109,5 +111,24 @@ describe('account is linked to the Clerk user id', () => {
 
   it('signed out gets 401', async () => {
     expect((await call('/api/account/licenses')).status).toBe(401);
+  });
+
+  it('another account cannot read the order even with a valid token', async () => {
+    const t = await orderToken('ord_1', SECRET);
+    expect((await authed(`/api/orders/ord_1?t=${t}`, 'userB')).status).toBe(404);
+  });
+
+  it('coupon check and payment verify need a sign-in', async () => {
+    const json = { 'Content-Type': 'application/json' };
+    expect((await call('/api/coupons/check', { method: 'POST', headers: json, body: JSON.stringify({ product_id: 'demo', code: 'X' }) })).status).toBe(401);
+    expect((await call('/api/verify', { method: 'POST', headers: json, body: '{}' })).status).toBe(401);
+  });
+
+  it('checkout needs a signed-in user', async () => {
+    const body = JSON.stringify({ product_id: 'demo' });
+    const headers = { 'Content-Type': 'application/json', Origin: 'https://demo.example.com' };
+    expect((await call('/api/checkout', { method: 'POST', headers, body })).status).toBe(401);
+    const signedIn = await call('/api/checkout', { method: 'POST', headers: { ...headers, Authorization: 'Bearer userA' }, body });
+    expect(signedIn.status).not.toBe(401); // reaches Razorpay (not configured in tests), so 5xx/502 is fine
   });
 });
