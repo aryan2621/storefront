@@ -60,10 +60,7 @@ storefront/
 ├── seed/
 │   └── products.sql            # Catalog seed
 ├── scripts/
-│   ├── keygen.mjs              # Ed25519 keypair generator
-│   ├── rust/                   # Rust crate for Tauri apps & Burrow daemon
-│   ├── ts/                     # TypeScript module for Electron
-│   └── react/                  # Reusable LicensePanel settings component
+│   └── keygen.mjs              # Ed25519 keypair generator
 ├── wrangler.jsonc              # Cloudflare configuration
 └── package.json
 ```
