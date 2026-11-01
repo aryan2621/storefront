@@ -60,7 +60,7 @@ export async function getSeatLimitDetails(
   )
     .bind(licenseId)
     .all<any>();
-  return rows.results.map((row) => ({
+  return rows.results.map((row: { id: any; device_id: any; device_name: any; activated_at: any; }) => ({
     id: row.id,
     device_id: row.device_id,
     device_name: row.device_name,
