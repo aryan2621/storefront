@@ -36,6 +36,38 @@ const Setting: React.FC<{ id: string; field: string; value: number; scale?: numb
   );
 };
 
+/** Text field that saves one product setting on blur; empty clears it. Used for landing URL and allowed origins. */
+const TextSetting: React.FC<{ id: string; field: string; value: string; label: string; placeholder?: string }> = ({ id, field, value, label, placeholder }) => {
+  const action = useAdminAction();
+  return (
+    <label className="block text-xs text-[var(--color-muted)]">
+      {label}
+      <Input
+        type="text"
+        defaultValue={value}
+        placeholder={placeholder}
+        className="mt-1 h-9 w-72"
+        onBlur={(e) => {
+          const next = e.target.value.trim();
+          if (next !== value) action.mutate({ url: `/api/admin/products/${id}`, method: 'PATCH', body: { [field]: next || null } });
+        }}
+      />
+    </label>
+  );
+};
+
+/** allowed_origins is stored as a JSON array or comma-separated text; show it comma-separated. */
+const originsText = (raw: string | null): string => {
+  if (!raw) return '';
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed.join(', ');
+  } catch {
+    // plain csv
+  }
+  return raw;
+};
+
 export const AdminProducts: React.FC = () => {
   const products = useRows('/api/admin/products', 'products');
   const sales = useRows('/api/admin/product-sales', 'products');
@@ -61,6 +93,8 @@ export const AdminProducts: React.FC = () => {
                   <Setting id={p.id} field="max_devices" value={p.max_devices} label="Devices" />
                   <Setting id={p.id} field="updates_months" value={p.updates_months} label="Updates (months)" />
                   <Setting id={p.id} field="refund_window_days" value={p.refund_window_days} label="Refund window (days)" />
+                  <TextSetting id={p.id} field="landing_url" value={p.landing_url ?? ''} label="Landing URL (Back to the app)" placeholder="https://capturita.example.com" />
+                  <TextSetting id={p.id} field="allowed_origins" value={originsText(p.allowed_origins)} label="Allowed origins (comma-separated)" placeholder="https://capturita.example.com" />
                 </div>
               </div>
             );

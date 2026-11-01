@@ -550,23 +550,16 @@ async function handleLicenseDeactivation(c: Context<{ Bindings: Env; Variables: 
     return c.json({ error: parsed.error.errors[0]?.message || 'Invalid deactivation payload' }, 400);
   }
 
-  const { product_id, license_id, device_id, activation_id } = parsed.data;
-
-  let row: any = null;
-  if (activation_id) {
-    row = await c.env.DB.prepare('SELECT * FROM activations WHERE id = ?').bind(activation_id).first<any>();
-  } else if (license_id && device_id) {
-    row = await c.env.DB.prepare(
-      'SELECT * FROM activations WHERE license_id = ? AND device_id = ? AND deactivated_at IS NULL LIMIT 1'
-    ).bind(license_id, device_id).first<any>();
-  } else if (product_id && device_id) {
-    const license = await c.env.DB.prepare('SELECT id FROM licenses WHERE product_id = ? AND status = "active" ORDER BY issued_at DESC LIMIT 1').bind(product_id).first<any>();
-    if (license) {
-      row = await c.env.DB.prepare(
-        'SELECT * FROM activations WHERE license_id = ? AND device_id = ? AND deactivated_at IS NULL LIMIT 1'
-      ).bind(license.id, device_id).first<any>();
-    }
+  const { product_id, key, device_id } = parsed.data;
+  // Only the key holder can free a seat; signed-in customers use /api/account/devices/:id instead.
+  const pubKey = await resolveProductPublicKey(c.env, product_id);
+  const verification = pubKey ? await verifyLicense(key, product_id, pubKey) : null;
+  if (!verification?.valid || !verification.payload) {
+    return c.json({ error: 'invalid_key' }, 402);
   }
+  const row = await c.env.DB.prepare(
+    'SELECT * FROM activations WHERE license_id = ? AND device_id = ? AND deactivated_at IS NULL LIMIT 1'
+  ).bind(verification.payload.lic, device_id).first<any>();
 
   if (!row) {
     return c.json({ ok: true, deactivated: false }, 200);

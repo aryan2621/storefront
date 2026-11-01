@@ -64,6 +64,16 @@ const activate = (key: string, n: number) =>
   );
 
 describe('activation', () => {
+  it('issues a token with the fields the desktop app verifies', async () => {
+    const res = await activate(await issue(env.DB, 'lic_token', 'active'), 9); // own license: keeps the seat-race test's seats free
+    expect(res.status).toBe(200);
+    const token = ((await res.json()) as any).token as string;
+    const body = JSON.parse(Buffer.from(token.split('.')[0], 'base64').toString());
+    expect(body).toMatchObject({ type: 'device_activate', product: 'demo', license_id: 'lic_token', device_id: hex(9) });
+    expect(body.iat).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+    expect(body.exp).toBeGreaterThan(body.iat);
+  });
+
   it('refuses a revoked key', async () => {
     const res = await activate(revokedKey, 1);
     expect(res.status).toBe(402);
@@ -89,9 +99,14 @@ describe('activation', () => {
   });
 
   it('frees a seat on deactivate so another device can take it', async () => {
-    const del = await app.request('/api/licenses/deactivate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ license_id: 'lic_good', device_id: hex(1) }) }, env);
+    const del = await app.request('/api/licenses/deactivate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product_id: 'demo', key: goodKey, device_id: hex(1) }) }, env);
     expect(del.status).toBe(200);
     expect((await activate(goodKey, 9)).status).toBe(200);
+  });
+
+  it('refuses to deactivate without a valid key', async () => {
+    const del = await app.request('/api/licenses/deactivate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product_id: 'demo', key: 'x.y', device_id: hex(9) }) }, env);
+    expect(del.status).toBe(402);
   });
 
   it('signs the activation token with the product kid', async () => {

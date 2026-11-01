@@ -1,6 +1,18 @@
 import React from 'react';
+import { useQueries } from '@tanstack/react-query';
+import { fetchProduct } from '../../lib/api';
+import { formatINR } from '../../lib/format';
+
+const ROWS: [string, string][] = [
+  ['murmur', 'Murmur (voice dictation)'],
+  ['capturita', 'Capturita (screen recorder)'],
+  ['agentic-browser', 'Agentic Browser (AI browser)'],
+  ['orbit-ide', 'Orbit IDE (iOS and Android IDE)'],
+  ['dev-tools', 'DevTools (BigView, Relay)'],
+];
 
 export const Pricing: React.FC = () => {
+  const products = useQueries({ queries: ROWS.map(([id]) => ({ queryKey: ['product', id], queryFn: () => fetchProduct(id) })) });
   return (
     <div className="mx-auto max-w-[68ch] space-y-8 px-4 py-10 leading-relaxed sm:px-6 sm:py-14">
       <h1 className="text-[clamp(2.25rem,6vw,3.25rem)] font-extrabold leading-[0.98] tracking-[-0.03em]">Pricing Details & Model</h1>
@@ -19,36 +31,17 @@ export const Pricing: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">Murmur (voice dictation)</td>
-                <td className="py-2.5 px-3">One-time</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;999</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">Capturita (screen recorder)</td>
-                <td className="py-2.5 px-3">One-time</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;999</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">Agentic Browser (AI browser)</td>
-                <td className="py-2.5 px-3">One-time</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;999</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">Orbit IDE (iOS and Android IDE)</td>
-                <td className="py-2.5 px-3">One-time</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;1,499</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
-              </tr>
-              <tr>
-                <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">DevTools (BigView, Relay)</td>
-                <td className="py-2.5 px-3">One-time</td>
-                <td className="py-2.5 px-3 font-mono-price font-semibold">&#8377;999</td>
-                <td className="py-2.5 px-3 text-[var(--color-muted)]">12 Months</td>
-              </tr>
+              {ROWS.map(([id, label], i) => {
+                const p = products[i].data;
+                return (
+                  <tr key={id}>
+                    <td className="py-2.5 px-3 text-[var(--color-foreground)] font-medium">{label}</td>
+                    <td className="py-2.5 px-3">{p ? (p.kind === 'subscription' ? `Per ${p.period}` : 'One-time') : '—'}</td>
+                    <td className="py-2.5 px-3 font-mono-price font-semibold">{p ? formatINR(p.price_paise) : '—'}</td>
+                    <td className="py-2.5 px-3 text-[var(--color-muted)]">{p ? `${p.updates_months} Months` : '—'}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

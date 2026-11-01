@@ -26,7 +26,7 @@ Storefront URL below is `<storefront>` (today `https://storefront.just-a-dev.wor
 | Terms, Refund policy | `<storefront>/terms`, `<storefront>/refunds` |
 | Contact for purchases | `<storefront>/contact` |
 
-Each product row in storefront needs `landing_url` (where "Back to the app" returns after payment) and `allowed_origins` (the landing's origin) set from Admin → Products. Both are database fields; the Products page edits price, devices, updates and refund window only, so set these two with the product patch API or SQL for now.
+Each product row in storefront needs `landing_url` (where "Back to the app" returns after payment) and `allowed_origins` (the landing's origin) set from Admin → Products. Both are editable on Admin → Products (allowed origins is comma-separated).
 
 ## What moves from Capturita to storefront
 
@@ -64,7 +64,7 @@ Buying needs a signed-in account (Clerk); the email comes from the verified toke
 
 1. **Razorpay webhook:** point it at `<storefront>/api/webhooks/razorpay` for `payment.captured`, `order.paid` and `refund.processed`.
 2. **Same signing key:** storefront's `LICENSE_KEY` (shared by all products; create with `pnpm keygen`) must be the private key whose public half is built into the app, and `license_kid` must match, or old keys stop verifying. There are no customers yet, so a new pair is fine now; after the first sale a key change needs a new app release.
-3. **Product fields:** set `landing_url` and `allowed_origins` for each product (Admin → Products edits price, devices, updates and refund window only).
+3. **Product fields:** set `landing_url` and `allowed_origins` for each product (Admin → Products).
 4. **Secrets:** `ORDER_TOKEN_SECRET`, Razorpay keys, `BREVO_API_KEY`, `LICENSE_KEY` as Worker secrets.
 5. **Download links:** private app repos (Murmur, Orbit IDE) have no public releases; downloads live in `aryan2621/downloads` (`?q=murmur`, `?q=orbit`, `?q=capturita`), and storefront's seed now uses those.
 

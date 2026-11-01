@@ -34,10 +34,12 @@ export async function createActivationToken(
     throw new Error('Product license configuration missing');
   }
 
-  const exp = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
+  const iat = Math.floor(Date.now() / 1000);
+  const exp = iat + TOKEN_TTL_SECONDS;
   return signJson(
     {
       type: 'device_activate',
+      iat,
       product: productId,
       kid,
       device_id: deviceId,

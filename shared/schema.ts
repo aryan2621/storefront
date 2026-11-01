@@ -81,8 +81,7 @@ export const activateLicenseSchema = z.object({
 });
 
 export const deactivateLicenseSchema = z.object({
-  product_id: z.string().min(1, 'Product is required').optional(),
-  license_id: z.string().optional(),
-  device_id: z.string().optional(),
-  activation_id: z.string().optional(),
+  product_id: z.string().min(1, 'Product is required'),
+  key: z.string().min(1, 'Key is required'),
+  device_id: z.string().min(1, 'Device is required'),
 });
