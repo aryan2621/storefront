@@ -1,0 +1,29 @@
+# Razorpay (Test / Live)
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+RAZORPAY_WEBHOOK_SECRET=...
+
+# Per-product Ed25519 signing keys (run `pnpm keygen`; suffix is the upper-cased product id)
+LICENSE_KEY_ORBIT_IDE=...
+LICENSE_PUBLIC_KEY_ORBIT_IDE=...
+
+# Brevo (sender: must be a verified sender in Brevo, e.g. risha2621@gmail.com)
+BREVO_API_KEY=
+
+# Resend API Key
+RESEND_API_KEY=re_...
+
+# Local admin bypass (never set true in production)
+ADMIN_DEV_BYPASS=true
+ADMIN_EMAILS=admin@storefront.local
+
+# Clerk (leave empty locally; the dev bypass signs you in as admin)
+CLERK_JWKS_URL=
+CLERK_ISSUER=
+
+# Turnstile (optional locally — omit secret to skip verification)
+TURNSTILE_SITE_KEY=
+TURNSTILE_SECRET=
+
+# Secrets
+CANCEL_TOKEN_SECRET=...

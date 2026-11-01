@@ -1,0 +1,243 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  --font-sans: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, monospace;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+}
+
+/* Light: a sheet of gummed stamp paper. Names kept from the old system so every page picks them up. */
+:root {
+  color-scheme: light;
+  --color-surface-0: #f4eee2; /* sheet margin */
+  --color-surface-1: #fffdf8; /* sheet face / stamp paper */
+  --color-surface-2: #ece4d3;
+  --color-border: #d9ccb2;
+  --color-border-strong: #b9a888;
+  --color-foreground: #1d1b19; /* ink */
+  --color-muted: #675c49;
+  --color-accent: #c4242b; /* post-box red: the buy action only */
+  --color-accent-hover: #a81d24;
+  --color-accent-muted: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  --color-on-accent: #ffffff;
+  --color-stamp: #d0603f; /* the app icons' terracotta */
+  --color-stamp-paper: #fffdf8; /* stamps stay paper in both themes */
+  --color-stamp-ink: #1d1b19;
+  --color-stamp-ink-muted: #675c49;
+  --color-sheet: #e6dcc6; /* gummed sheet showing through the perforations */
+  --color-postmark: #2b3a55; /* cancellation ink */
+  --color-success: #2f6b4a;
+  --color-warning: #9a5a00;
+  --color-danger: #b8202a;
+  /* Categorical, fixed order, validated (dataviz validate_palette): terracotta leads, then blue, aqua, yellow, magenta, violet. */
+  --color-chart-1: #d0603f;
+  --color-chart-2: #2a78d6;
+  --color-chart-3: #1baf7a;
+  --color-chart-4: #eda100;
+  --color-chart-5: #e87ba4;
+  --color-chart-6: #6250d6;
+  --color-chart-other: #9a917f;
+  --stamp-shadow: 0 1px 2px rgb(60 40 20 / 0.12), 0 6px 14px -6px rgb(60 40 20 / 0.25);
+  --stamp-lift: 0 2px 4px rgb(60 40 20 / 0.14), 0 18px 30px -12px rgb(60 40 20 / 0.4);
+}
+
+/* Dark: the black page of a stock book, stamps held in glassine strips. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-surface-0: #121110;
+    --color-surface-1: #1c1a18;
+    --color-surface-2: #26231f;
+    --color-border: #3a352e;
+    --color-border-strong: #5a5246;
+    --color-foreground: #efe8da;
+    --color-muted: #b3a88f;
+    --color-accent: #d23a33;
+    --color-accent-hover: #e04a42;
+    --color-stamp-paper: #ece4d3;
+    --color-sheet: #24211d;
+    --color-postmark: #a9b7d6;
+    --color-success: #7fc79b;
+    --color-warning: #e0a347;
+    --color-danger: #ef6a60;
+    --color-chart-1: #d95926;
+    --color-chart-2: #3987e5;
+    --color-chart-3: #199e70;
+    --color-chart-4: #c98500;
+    --color-chart-5: #d55181;
+    --color-chart-6: #9085e9;
+    --color-chart-other: #7a7264;
+    --stamp-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 18px -8px rgb(0 0 0 / 0.7);
+    --stamp-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 22px 36px -14px rgb(0 0 0 / 0.85);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-surface-0: #121110;
+  --color-surface-1: #1c1a18;
+  --color-surface-2: #26231f;
+  --color-border: #3a352e;
+  --color-border-strong: #5a5246;
+  --color-foreground: #efe8da;
+  --color-muted: #b3a88f;
+  --color-accent: #d23a33;
+  --color-accent-hover: #e04a42;
+  --color-stamp-paper: #ece4d3;
+  --color-sheet: #24211d;
+  --color-postmark: #a9b7d6;
+  --color-success: #7fc79b;
+  --color-warning: #e0a347;
+  --color-danger: #ef6a60;
+  --color-chart-1: #d95926;
+  --color-chart-2: #3987e5;
+  --color-chart-3: #199e70;
+  --color-chart-4: #c98500;
+  --color-chart-5: #d55181;
+  --color-chart-6: #9085e9;
+  --color-chart-other: #7a7264;
+  --stamp-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 8px 18px -8px rgb(0 0 0 / 0.7);
+  --stamp-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 22px 36px -14px rgb(0 0 0 / 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-stamp) 30%, transparent);
+  color: var(--color-foreground);
+}
+
+html {
+  scrollbar-color: var(--color-border-strong) var(--color-surface-0);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-surface-0);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  caret-color: var(--color-accent);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+  letter-spacing: -0.025em;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-postmark);
+  outline-offset: 2px;
+}
+
+.font-mono-price {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.surface-panel {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+/* Perforated edge: a grid of holes, unioned with a solid content box so only the margin shows them. */
+.perforated {
+  --perf: 10px;
+  padding: calc(var(--perf) * 0.6);
+  -webkit-mask:
+    radial-gradient(circle calc(var(--perf) * 0.3), #0000 96%, #000) calc(var(--perf) * -0.5) calc(var(--perf) * -0.5) /
+      var(--perf) var(--perf) round,
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask-composite: source-over;
+  mask:
+    radial-gradient(circle calc(var(--perf) * 0.3), #0000 96%, #000) calc(var(--perf) * -0.5) calc(var(--perf) * -0.5) /
+      var(--perf) var(--perf) round,
+    linear-gradient(#000 0 0) content-box;
+  mask-composite: add;
+}
+
+/* A stamp torn off the sheet: lift and a slight tilt. */
+.stamp {
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.12));
+}
+
+.stamp:hover {
+  transform: translateY(-2px);
+}
+
+.stamp[aria-pressed='true'] {
+  transform: translateY(-6px) rotate(-2.5deg);
+  filter: drop-shadow(0 14px 14px rgb(0 0 0 / 0.28));
+}
+
+/* Glassine strip of a stock book (dark) / the sheet face (light). */
+.sheet {
+  background: var(--color-sheet);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--stamp-shadow);
+}
+
+@keyframes postmark-thump {
+  0% {
+    opacity: 0;
+    transform: scale(1.35) rotate(-18deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.96) rotate(-11deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-12deg);
+  }
+}
+
+.postmark-thump {
+  animation: postmark-thump 420ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slide-up 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}

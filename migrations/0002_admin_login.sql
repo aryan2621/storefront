@@ -1,0 +1,1 @@
+-- Legacy admin login was removed; no-op migration retained to prevent stale deploy references.

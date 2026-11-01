@@ -1,0 +1,79 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "storefront",
+  "main": "worker/index.ts",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "storefront-db",
+      "database_id": "a37a14fe-39f4-460d-ba89-9da29b288e54",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "CHECKOUT_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 20, "period": 60 }
+    },
+    {
+      "name": "REFRESH_LIMITER",
+      "namespace_id": "1003",
+      "simple": { "limit": 30, "period": 60 }
+    }
+  ],
+  "triggers": {
+    "crons": ["0 0 * * *"]
+  },
+  "vars": {
+    "LICENSE_KID": "v1",
+    "SITE_URL": "https://storefront.just-a-dev.workers.dev",
+    "EMAIL_FROM": "Rishabh Verma <risha2621@gmail.com>",
+    "EMAIL_REPLY_TO": "risha2621@gmail.com",
+    "ADMIN_EMAIL": "risha2621@gmail.com",
+    "ADMIN_EMAILS": "risha2621@gmail.com",
+    "SELLER_NAME": "Rishabh Verma",
+    "SELLER_STATE": "Karnataka",
+    "ADMIN_DEV_BYPASS": "false",
+    "CLERK_ISSUER": "https://humble-cod-2507.clerk.accounts.dev",
+    "CLERK_JWKS_URL": "https://humble-cod-2507.clerk.accounts.dev/.well-known/jwks.json"
+  },
+  "env": {
+    "staging": {
+      "vars": {
+        "SITE_URL": "https://staging.example.com",
+        "ADMIN_DEV_BYPASS": "false"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "storefront-db-staging",
+          "database_id": "REPLACE_WITH_STAGING_D1_ID",
+          "migrations_dir": "migrations"
+        }
+      ]
+    },
+    "production": {
+      "vars": {
+        "SITE_URL": "https://example.com",
+        "ADMIN_DEV_BYPASS": "false"
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "storefront-db",
+          "database_id": "REPLACE_WITH_PRODUCTION_D1_ID",
+          "migrations_dir": "migrations"
+        }
+      ]
+    }
+  }
+}
