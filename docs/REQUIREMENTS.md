@@ -116,7 +116,6 @@ All **[verify]** against the code before deleting.
 - The single global signing key (`LICENSE_PRIVATE_KEY`, `LICENSE_PUBLIC_KEY*`). Replace with one key per product (section 7).
 - The unauthenticated customer email form for recovery (`/api/license/resend`, `Recover.tsx`), replaced by the signed-in account page. There is no signed-out recovery (decided).
 - `ADMIN_DEV_BYPASS` in production configuration.
-- The `app-license/` client libraries, only if each product's app will use its own activation client instead. Otherwise keep and extend them.
 - Anything in the public deployment that serves admin routes.
 
 ## 7. What to add to storefront

@@ -6,7 +6,7 @@ A unified, high-performance storefront and offline licensing platform built spec
 - **Backend API**: Hono on Cloudflare Workers (TypeScript)
 - **Database**: Cloudflare D1 (SQLite) with strict integer paise currency
 - **Payments**: Direct Razorpay REST integration (UPI, Cards, NetBanking) with constant-time HMAC validation
-- **Licensing**: Offline Ed25519 digital signatures via WebCrypto (`app-license` Rust crate & TypeScript module)
+- **Licensing**: Offline Ed25519 digital signatures via WebCrypto
 - **Admin**: Revenue analytics and key management protected by Cloudflare Access
 
 ---
@@ -61,7 +61,6 @@ storefront/
 │   └── products.sql            # Catalog seed
 ├── scripts/
 │   ├── keygen.mjs              # Ed25519 keypair generator
-├── app-license/                # Client licensing verification libraries
 │   ├── rust/                   # Rust crate for Tauri apps & Burrow daemon
 │   ├── ts/                     # TypeScript module for Electron
 │   └── react/                  # Reusable LicensePanel settings component

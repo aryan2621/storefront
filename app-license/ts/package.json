@@ -1,8 +1,0 @@
-{
-  "name": "@aryan/app-license",
-  "version": "0.1.0",
-  "description": "Offline Ed25519 license verification for Electron and Node apps",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "license": "MIT"
-}
