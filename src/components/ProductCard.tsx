@@ -18,7 +18,7 @@ export const StampFace: React.FC<{ product: Product; size?: 'sm' | 'lg' }> = ({ 
         width={256}
         height={256}
         loading="lazy"
-        className="block aspect-square w-full"
+        className="block aspect-square w-full scale-[1.5]" /* the icon is a rounded tile; zoom so only its mark shows */
         onError={(e) => (e.currentTarget.style.visibility = 'hidden')}
       />
     </span>
