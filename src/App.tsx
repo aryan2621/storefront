@@ -5,6 +5,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { AppRoutes } from './routes';
 import { AuthProvider } from './lib/session';
+import { CookieConsent, PageTracker } from './components/CookieConsent';
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,8 @@ export const App: React.FC = () => (
           <AppRoutes />
         </main>
         <Footer />
+        <PageTracker />
+        <CookieConsent />
       </div>
     </BrowserRouter>
     </AuthProvider>

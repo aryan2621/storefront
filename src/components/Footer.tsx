@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { REOPEN_EVENT } from '../lib/consent';
 
 const legal = [
+  ['/products', 'Products'],
   ['/terms', 'Terms'],
   ['/privacy', 'Privacy'],
   ['/refunds', 'Refunds'],
@@ -32,6 +34,13 @@ export const Footer: React.FC = () => (
             {label}
           </Link>
         ))}
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event(REOPEN_EVENT))}
+          className="flex h-10 items-center text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:underline"
+        >
+          Cookie settings
+        </button>
       </nav>
     </div>
   </footer>

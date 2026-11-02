@@ -18,7 +18,7 @@ export const Terms: React.FC = () => (
         heading: 'Keys and devices',
         body: [
           'A key is checked with a signature and activated online on each device. Each product has a device limit shown on its page. You can free a seat by removing a device in your account or in the app, or by emailing support.',
-          'The app re-checks about daily. If the licence service is unavailable, it allows up to 30 days since the last successful check for offline use. A key is for one person. Do not share or resell keys; shared keys can be revoked.',
+          'The app re-checks regularly. If the licence service is unavailable, it allows up to 30 days since the last successful check for offline use. A key is for one person. Do not share or resell keys; shared keys can be revoked.',
         ],
       },
       {

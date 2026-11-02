@@ -65,6 +65,9 @@ export const Navbar: React.FC = () => {
           </Link>
 
           <nav className="flex items-center" aria-label="Main">
+            <NavLink to="/products" className={linkClass}>
+              Products
+            </NavLink>
             {me && (
               <NavLink to="/account" className={linkClass}>
                 My licenses

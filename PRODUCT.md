@@ -15,7 +15,7 @@ One site that sells Pro licenses for a family of open-source desktop apps (orbit
 
 ## Positioning
 - The apps are free and open source. Pro sells convenience: signed builds, Pro features and a year of updates.
-- Licenses are Ed25519-signed keys that the apps verify offline. The apps never phone home, except subscription products, which refresh their key.
+- Licenses are Ed25519-signed keys the apps verify on the device. Official builds also activate online (first activation needs the internet) and re-check regularly; the last successful check allows 30 days offline.
 - No customer accounts: the email address is the identity, and lost keys are re-sent by email.
 - Priced in rupees, with Indian payment methods first (Razorpay).
 
@@ -38,7 +38,7 @@ One site that sells Pro licenses for a family of open-source desktop apps (orbit
 
 ## Evidence on Hand
 - Real app icons and screenshots/video exist in the app repos (aryan2621/*), to be imported under `public/apps/<slug>/`.
-- Real facts that can be stated: 14-day refund window, three personal machines on an honor system, offline verification, UPI/cards via Razorpay.
+- Real facts that can be stated: 14-day refund window, two devices per key (each activated online), signature verification on the device, UPI/cards via Razorpay.
 - **Absent:** testimonials, customer counts, press, ratings, benchmarks. Never fabricate these.
 
 ## Product Principles

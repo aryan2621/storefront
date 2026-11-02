@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 
 // clerkKey is fixed at build time, so the hook choice never changes between renders.
-const useClerkState = clerkKey
+export const useClerkState = clerkKey
   ? () => {
       const { isLoaded, isSignedIn } = useAuth();
       return { loaded: isLoaded, signedIn: !!isSignedIn };

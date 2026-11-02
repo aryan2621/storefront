@@ -58,7 +58,7 @@ INSERT INTO products (
   'capturita',
   'Capturita',
   'Screen recorder and editor for macOS with auto-zoom and captions',
-  'Record a screen, window or area with mic, system audio and camera, then edit with click-following auto-zoom, a smoothed cursor, captions and prompt-based AI cuts, all on your Mac. Exports MP4 up to 4K at 60 fps, or GIF; needs macOS 15+ on Apple silicon.',
+  'Record a screen, window or area with mic, system audio and a camera bubble, then edit with click-following auto-zoom, a smoothed cursor, backgrounds and exports up to 4K at 60 fps, or GIF. Recording and core editing are free; Pro adds on-device captions, AI editing, animated titles and Studio motion graphics. Recordings stay on your Mac unless you choose to share them. Needs macOS 15+ on Apple silicon.',
   'one_time',
   99900,
   NULL,

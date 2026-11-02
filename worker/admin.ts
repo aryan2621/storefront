@@ -153,6 +153,27 @@ export function createAdminRouter() {
     return c.json({ customers: customers.results });
   });
 
+  // Everyone who has signed in (Clerk), with the country stored while they consent to analytics.
+  admin.get('/analytics/users', async (c) => {
+    const users = await c.env.DB.prepare(`
+      SELECT u.clerk_user_id AS id, u.email, u.country, u.analytics_consent, u.first_seen_at, u.last_seen_at,
+        EXISTS (SELECT 1 FROM customers cu WHERE cu.email = lower(u.email)) AS buyer
+      FROM app_users u ORDER BY u.last_seen_at DESC LIMIT 500
+    `).all();
+    return c.json({ users: users.results });
+  });
+
+  admin.get('/analytics/countries', async (c) => {
+    const countries = await c.env.DB.prepare(`
+      SELECT country AS id, country, SUM(users) AS users, SUM(views) AS views FROM (
+        SELECT COALESCE(country, 'Unknown') AS country, COUNT(*) AS users, 0 AS views FROM app_users GROUP BY 1
+        UNION ALL
+        SELECT COALESCE(country, 'Unknown'), 0, COUNT(*) FROM page_views GROUP BY 1
+      ) GROUP BY country ORDER BY users DESC, views DESC
+    `).all();
+    return c.json({ countries: countries.results });
+  });
+
   admin.patch('/customers/:id', async (c) => {
     const id = c.req.param('id');
     const body = await c.req.json();

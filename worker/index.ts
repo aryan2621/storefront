@@ -13,6 +13,7 @@ import { RazorpayClient } from './razorpay';
 import { fulfillOrder } from './fulfill';
 import { signLicense, verifyLicense } from './license';
 import { createAdminRouter } from './admin';
+import { hasAnalyticsConsent, recordPageView, recordUser } from './analytics';
 import { handleRazorpayWebhookRequest } from './webhooks';
 import { getCurrentUser } from './access';
 import { findCustomerId } from './customer';
@@ -90,14 +91,21 @@ function decodeLicenseProductId(key: string): string | null {
 app.use('*', securityHeadersMiddleware);
 app.use('/api/*', cors());
 
+// Public: only fields that are safe to show. Shared by the list and the single-product endpoint.
+const PUBLIC_PRODUCT_COLUMNS = `id, name, tagline, description_md, kind, price_paise, period, updates_months, max_devices,
+            refund_window_days, download_url, image_url, landing_url`;
+
+app.get('/api/products', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT ${PUBLIC_PRODUCT_COLUMNS} FROM products WHERE active = 1 ORDER BY sort, name`
+  ).all();
+  return c.json({ products: results });
+});
+
 app.get('/api/products/:id', async (c) => {
-  const id = c.req.param('id');
-  // Public: the landing sites read price and details from here, so return only fields that are safe to show.
   const product = await c.env.DB.prepare(
-    `SELECT id, name, tagline, description_md, kind, price_paise, period, updates_months, max_devices,
-            refund_window_days, download_url, image_url, landing_url
-     FROM products WHERE id = ? AND active = 1`
-  ).bind(id).first();
+    `SELECT ${PUBLIC_PRODUCT_COLUMNS} FROM products WHERE id = ? AND active = 1`
+  ).bind(c.req.param('id')).first();
   if (!product) {
     return c.json({ error: 'Product not found' }, 404);
   }
@@ -606,10 +614,30 @@ app.get('/api/me', async (c) => {
     return c.json({ error: 'Not signed in' }, 401);
   }
 
+  await recordUser(c.env, user, c.req.raw);
   return c.json({
     email: user.email,
     role: user.isAdmin ? 'admin' : 'customer',
   });
+});
+
+// The browser has just changed its consent cookie; sync the signed-in user's stored consent and country right away.
+app.post('/api/consent', rateLimit('REFRESH_LIMITER', 'consent'), async (c) => {
+  const user = await getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
+  if (user) await recordUser(c.env, user, c.req.raw);
+  return c.body(null, 204);
+});
+
+// Page views are stored only when the visitor's consent cookie says analytics; the path never carries a query string.
+app.post('/api/track', rateLimit('REFRESH_LIMITER', 'track'), async (c) => {
+  if (!hasAnalyticsConsent(c.req.header('Cookie'))) return c.body(null, 204);
+  const { path } = await c.req.json<{ path?: unknown }>().catch(() => ({ path: undefined }));
+  if (typeof path !== 'string' || !path.startsWith('/') || path.length > 200 || path.startsWith('/admin')) {
+    return c.json({ error: 'Invalid path' }, 400);
+  }
+  const user = await getCurrentUser(c.env, c.req.header('Cookie'), c.req.header('Authorization'));
+  await recordPageView(c.env, c.req.raw, path.split(/[?#]/)[0], user?.userId);
+  return c.body(null, 204);
 });
 
 async function requireCustomer(c: any) {

@@ -8,6 +8,7 @@ const links = [
   ['', 'Overview'],
   ['payments', 'Payments'],
   ['customers', 'Customers'],
+  ['analytics', 'Analytics'],
   ['subscriptions', 'Subscriptions'],
   ['licenses', 'Licenses'],
   ['lookup', 'Customer lookup'],

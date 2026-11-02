@@ -17,13 +17,19 @@ export const Privacy: React.FC = () => (
       {
         heading: 'Licence checks in the apps',
         body: [
-          'Official builds send your licence key, a one-way hash of your device’s hardware ID and the device name to the licence service when activating and about daily afterwards. This limits a key to its device count and lets us disable refunded keys. The hash cannot be reversed into the hardware ID. No app content is sent for this check.',
+          'Official builds send your licence key, a one-way hash of your device’s hardware ID and the device name to the licence service when activating and regularly afterwards. This limits a key to its device count and lets us disable refunded keys. The hash cannot be reversed into the hardware ID. No app content is sent for this check.',
+        ],
+      },
+      {
+        heading: 'Cookies and analytics',
+        body: [
+          'A cookie records your cookie choice. When you sign in we keep your account email and when you last visited, whatever you choose. If you accept analytics, we also count page views and store the country you visit from (taken from Cloudflare, with no IP address stored) so we can see where our users are. If you choose necessary only, no page views or country are stored, and withdrawing consent later from Cookie settings in the footer clears your stored country. Signing in and paying work either way.',
         ],
       },
       {
         heading: 'Services we use',
         body: [
-          'Razorpay processes payments. Clerk handles sign-in to your account, and purchase emails are sent through Brevo, so your email address is shared with them for those purposes. Cloudflare hosts the site and processes checkout requests; when configured, Cloudflare Turnstile helps prevent automated checkout abuse. The site does not use advertising analytics.',
+          'Razorpay processes payments. Clerk handles sign-in to your account, and purchase emails are sent through Brevo, so your email address is shared with them for those purposes. Cloudflare hosts the site and processes checkout requests; when configured, Cloudflare Turnstile helps prevent automated checkout abuse. The site does not use advertising trackers.',
         ],
       },
       {

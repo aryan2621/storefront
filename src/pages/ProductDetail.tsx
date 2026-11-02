@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Download } from 'lucide-react';
 import { fetchProduct } from '../lib/api';
 import { formatINR } from '../lib/format';
 import { BuyDialog } from '../components/BuyDialog';
 import { useRequireSignIn } from '../lib/session';
 import { StampFace, priceSuffix } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
+import { ProductSections } from '../components/ProductSections';
+import { productContent } from '../content';
 
 export const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -98,10 +100,17 @@ export const ProductDetail: React.FC = () => {
                   <Download className="h-4 w-4" aria-hidden /> Download the free build
                 </a>
               )}
+              {product.landing_url && (
+                <a href={product.landing_url} target="_blank" rel="noreferrer" className="mt-3 inline-flex h-11 items-center gap-1.5 underline">
+                  Full product details <ArrowUpRight className="h-4 w-4" aria-hidden />
+                </a>
+              )}
             </div>
           </div>
         </header>
       </div>
+
+      <ProductSections product={product} content={productContent[product.id]} />
 
       <div className="slide-up sticky bottom-0 z-30 border-t border-[var(--color-border-strong)] bg-[var(--color-surface-1)] px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 md:hidden">
         <div className="flex items-center gap-3">

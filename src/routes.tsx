@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { Products } from './pages/Products';
 import { ProductDetail } from './pages/ProductDetail';
 import { Success } from './pages/Success';
 import { Account } from './pages/Account';
@@ -19,12 +20,14 @@ import { AdminLicenses } from './pages/admin/AdminLicenses';
 import { AdminEvents } from './pages/admin/AdminEvents';
 import { AdminLookup } from './pages/admin/AdminLookup';
 import { AdminProducts } from './pages/admin/AdminProducts';
+import { AdminAnalytics } from './pages/admin/AdminAnalytics';
 import { AdminAudit } from './pages/admin/AdminAudit';
 import { NotFound } from './pages/NotFound';
 
 export const AppRoutes: React.FC = () => (
   <Routes>
     <Route path="/" element={<Home />} />
+    <Route path="/products" element={<Products />} />
     <Route path="/p/:slug" element={<ProductDetail />} />
     <Route path="/success" element={<Success />} />
     <Route path="/account" element={<Account />} />
@@ -43,6 +46,7 @@ export const AppRoutes: React.FC = () => (
       <Route path="events" element={<AdminEvents />} />
       <Route path="lookup" element={<AdminLookup />} />
       <Route path="products" element={<AdminProducts />} />
+      <Route path="analytics" element={<AdminAnalytics />} />
       <Route path="audit" element={<AdminAudit />} />
     </Route>
     <Route path="/404" element={<NotFound />} />

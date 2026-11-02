@@ -13,7 +13,10 @@ export interface Product {
   sort: number;
   repo_url?: string;
   download_url?: string;
+  landing_url?: string;
   image_url?: string;
+  max_devices?: number;
+  refund_window_days?: number;
 }
 
 export interface CheckoutResponse {
@@ -73,7 +76,7 @@ export async function fetchPublicConfig(): Promise<{ turnstile_site_key: string 
   return res.json();
 }
 
-/** Admin-only: there is no public product list. */
+/** Admin-only list (includes inactive products); the public list is fetchPublicProducts. */
 export async function fetchProducts(): Promise<Product[]> {
   const res = await apiFetch('/api/admin/products');
   if (!res.ok) {
@@ -82,6 +85,12 @@ export async function fetchProducts(): Promise<Product[]> {
   }
   const data = await res.json();
   return data.products;
+}
+
+export async function fetchPublicProducts(): Promise<Product[]> {
+  const res = await fetch('/api/products');
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return (await res.json()).products;
 }
 
 export async function fetchProduct(id: string): Promise<Product> {

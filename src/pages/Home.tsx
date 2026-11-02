@@ -8,7 +8,7 @@ import { useSession } from '../lib/session';
 const faqs = [
   {
     q: 'How does offline licensing work?',
-    a: 'Each license is an Ed25519-signed key your app verifies on your device. Official builds also activate it online and re-check about daily, and keep working offline for up to 30 days.',
+    a: 'Each license is an Ed25519-signed key your app verifies on your device. Official builds also activate it online and re-check regularly, and keep working offline for up to 30 days.',
   },
   {
     q: 'Which payment methods are supported?',
@@ -31,7 +31,7 @@ const faqs = [
 const steps = [
   ['Pay', 'Pay in rupees through Razorpay. The price is shown before you pay.'],
   ['Get the key', 'Shown on screen the moment payment clears, emailed to you, and kept on your account page.'],
-  ['Activate offline', 'Paste it in the app under Settings → License. The app registers your device and re-checks about daily.'],
+  ['Activate', 'Paste it in the app under Settings → License. The first activation needs the internet; after that the app re-checks regularly.'],
   ['Change your mind', 'Full refund within the refund window, no questions.'],
 ] as const;
 
@@ -55,6 +55,10 @@ export const Home: React.FC = () => {
           come here to pay and get your licence key. Sign in to buy; the licence goes to your account email. Signed in, you can see your keys, manage your
           devices and find your receipts.
         </p>
+
+        <Link to="/products" className="mt-6 inline-flex h-11 items-center rounded-md bg-[var(--color-foreground)] px-4 font-semibold text-[var(--color-surface-1)]">
+          Browse products
+        </Link>
 
         {me ? (
           <div className="mt-8 rounded-[var(--radius-md)] border border-[var(--color-border-strong)] bg-[var(--color-surface-1)] p-5 sm:p-6">

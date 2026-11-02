@@ -71,4 +71,4 @@ storefront/
 
 1. **Server-Side Pricing**: Prices are strictly fetched from the database. The frontend never dictates the price.
 2. **Idempotent Fulfillment**: Whether the user finishes the browser callback or the Razorpay webhook arrives first, `fulfillOrder()` runs exactly once and deduplicates events.
-3. **100% Offline App Verification**: Desktop apps verify licenses using the public key embedded in the app without network calls.
+3. **Signed keys, online seats**: Apps verify the key signature with an embedded public key, then activate the device online (needed once) and re-check regularly; a successful check allows 30 days offline.
