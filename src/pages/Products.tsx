@@ -6,6 +6,7 @@ import { formatINR } from '../lib/format';
 import { BuyDialog } from '../components/BuyDialog';
 import { StampFace, priceSuffix } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { useRequireSignIn } from '../lib/session';
 
 export const Products: React.FC = () => {
@@ -35,7 +36,11 @@ export const Products: React.FC = () => {
               {priceSuffix(p)}
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
-              <Button onClick={() => requireSignIn(() => setBuying(p))}>Buy Now</Button>
+              {p.coming_soon ? (
+                <Badge tone="warning">coming soon</Badge>
+              ) : (
+                <Button onClick={() => requireSignIn(() => setBuying(p))}>Buy Now</Button>
+              )}
               <Button variant="outline" asChild>
                 <Link to={`/p/${p.id}`}>Details</Link>
               </Button>

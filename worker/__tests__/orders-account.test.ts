@@ -124,6 +124,13 @@ describe('account is linked to the Clerk user id', () => {
     expect((await call('/api/verify', { method: 'POST', headers: json, body: '{}' })).status).toBe(401);
   });
 
+  it('checkout refuses a coming-soon product', async () => {
+    await env.DB.prepare("UPDATE products SET coming_soon = 1 WHERE id = 'demo'").run();
+    const res = await call('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://demo.example.com', Authorization: 'Bearer userA' }, body: JSON.stringify({ product_id: 'demo' }) });
+    await env.DB.prepare("UPDATE products SET coming_soon = 0 WHERE id = 'demo'").run();
+    expect(res.status).toBe(409);
+  });
+
   it('checkout needs a signed-in user', async () => {
     const body = JSON.stringify({ product_id: 'demo' });
     const headers = { 'Content-Type': 'application/json', Origin: 'https://demo.example.com' };

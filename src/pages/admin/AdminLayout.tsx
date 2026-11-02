@@ -1,6 +1,6 @@
 import { useSession } from '../../lib/session';
 import React from 'react';
-import { NavLink, Outlet, useSearchParams } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '../../lib/api';
 
@@ -101,6 +101,7 @@ const SignedOutView: React.FC = () => (
 
 export const AdminLayout: React.FC = () => {
   const { search } = useAdminFilters();
+  const onOverview = useLocation().pathname.replace(/\/$/, '') === '/admin'; // the only page that reads the filters
   const me = useSession();
   if (me.isLoading) return null;
   if (me.data?.role !== 'admin') return <SignedOutView />;
@@ -131,7 +132,7 @@ export const AdminLayout: React.FC = () => {
         </nav>
       </aside>
       <div className="min-w-0">
-        <Filters />
+        {onOverview && <Filters />}
         <div className="mt-6">
           <Outlet />
         </div>

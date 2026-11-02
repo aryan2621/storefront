@@ -36,22 +36,43 @@ const Setting: React.FC<{ id: string; field: string; value: number; scale?: numb
   );
 };
 
-/** Text field that saves one product setting on blur; empty clears it. Used for landing URL and allowed origins. */
-const TextSetting: React.FC<{ id: string; field: string; value: string; label: string; placeholder?: string }> = ({ id, field, value, label, placeholder }) => {
+/** Text field that saves one product setting on blur; empty clears it. Used for landing URL, allowed origins and the description (multiline). */
+const TextSetting: React.FC<{ id: string; field: string; value: string; label: string; placeholder?: string; multiline?: boolean }> = ({ id, field, value, label, placeholder, multiline }) => {
+  const action = useAdminAction();
+  const save = (raw: string) => {
+    const next = raw.trim();
+    if (next !== value) action.mutate({ url: `/api/admin/products/${id}`, method: 'PATCH', body: { [field]: next || null } });
+  };
+  return (
+    <label className={multiline ? 'block w-full text-xs text-[var(--color-muted)]' : 'block text-xs text-[var(--color-muted)]'}>
+      {label}
+      {multiline ? (
+        <textarea
+          defaultValue={value}
+          placeholder={placeholder}
+          rows={4}
+          className="mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--color-border-strong)] bg-transparent p-2 text-sm text-[var(--color-foreground)]"
+          onBlur={(e) => save(e.target.value)}
+        />
+      ) : (
+        <Input type="text" defaultValue={value} placeholder={placeholder} className="mt-1 h-9 w-72" onBlur={(e) => save(e.target.value)} />
+      )}
+    </label>
+  );
+};
+
+/** Checkbox that saves a 0/1 product flag on change. */
+const ToggleSetting: React.FC<{ id: string; field: string; value: boolean; label: string }> = ({ id, field, value, label }) => {
   const action = useAdminAction();
   return (
-    <label className="block text-xs text-[var(--color-muted)]">
-      {label}
-      <Input
-        type="text"
-        defaultValue={value}
-        placeholder={placeholder}
-        className="mt-1 h-9 w-72"
-        onBlur={(e) => {
-          const next = e.target.value.trim();
-          if (next !== value) action.mutate({ url: `/api/admin/products/${id}`, method: 'PATCH', body: { [field]: next || null } });
-        }}
+    <label className="flex items-center gap-2 text-sm">
+      <input
+        type="checkbox"
+        defaultChecked={value}
+        className="h-4 w-4"
+        onChange={(e) => action.mutate({ url: `/api/admin/products/${id}`, method: 'PATCH', body: { [field]: e.target.checked ? 1 : 0 } })}
       />
+      {label}
     </label>
   );
 };
@@ -95,6 +116,8 @@ export const AdminProducts: React.FC = () => {
                   <Setting id={p.id} field="refund_window_days" value={p.refund_window_days} label="Refund window (days)" />
                   <TextSetting id={p.id} field="landing_url" value={p.landing_url ?? ''} label="Landing URL (Back to the app)" placeholder="https://capturita.example.com" />
                   <TextSetting id={p.id} field="allowed_origins" value={originsText(p.allowed_origins)} label="Allowed origins (comma-separated)" placeholder="https://capturita.example.com" />
+                  <TextSetting id={p.id} field="description_md" value={p.description_md ?? ''} label="Description (shown on the product page)" multiline />
+                  <ToggleSetting id={p.id} field="coming_soon" value={!!p.coming_soon} label="Coming soon (cannot be bought)" />
                 </div>
               </div>
             );

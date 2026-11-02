@@ -14,6 +14,7 @@ export interface Product {
   repo_url?: string;
   download_url?: string;
   landing_url?: string;
+  coming_soon?: number;
   image_url?: string;
   max_devices?: number;
   refund_window_days?: number;

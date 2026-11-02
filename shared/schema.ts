@@ -55,6 +55,7 @@ export const adminPatchProductSchema = z.object({
   name: z.string().optional(),
   tagline: z.string().optional(),
   description_md: z.string().nullable().optional(),
+  coming_soon: z.number().int().min(0).max(1).optional(),
   kind: z.enum(['one_time', 'subscription']).optional(),
   price_paise: z.number().int().nonnegative().optional(),
   period: z.enum(['month', 'year']).nullable().optional(),

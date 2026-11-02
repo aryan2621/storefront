@@ -8,6 +8,7 @@ import { BuyDialog } from '../components/BuyDialog';
 import { useRequireSignIn } from '../lib/session';
 import { StampFace, priceSuffix } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import { ProductSections } from '../components/ProductSections';
 import { productContent } from '../content';
 
@@ -48,6 +49,7 @@ export const ProductDetail: React.FC = () => {
   }
 
   const isSubscription = product.kind === 'subscription';
+  const comingSoon = !!product.coming_soon;
   const terms = isSubscription
     ? `Billed every ${product.period || 'month'} · cancel anytime`
     : `One-time · ${product.updates_months || 12} months of updates`;
@@ -68,6 +70,7 @@ export const ProductDetail: React.FC = () => {
           </div>
           <div className="min-w-0">
             <h1 className="text-[clamp(2.5rem,7vw,4rem)] font-extrabold leading-[0.95] tracking-[-0.035em]">{product.name}</h1>
+            {comingSoon && <Badge tone="warning" className="mt-3">coming soon</Badge>}
             <p className="mt-3 text-xl leading-snug">{product.tagline}</p>
             <p className="mt-4 max-w-prose leading-relaxed text-[var(--color-muted)]">{product.description_md}</p>
 
@@ -78,8 +81,8 @@ export const ProductDetail: React.FC = () => {
               </p>
               <p className="mt-1 text-[var(--color-muted)]">{terms}</p>
               <div className="mt-5 hidden flex-wrap gap-3 md:flex">
-                <Button size="lg" onClick={() => requireSignIn(() => setBuyOpen(true))}>
-                  Buy {product.name} Pro
+                <Button size="lg" disabled={comingSoon} onClick={() => requireSignIn(() => setBuyOpen(true))}>
+                  {comingSoon ? 'Coming soon' : `Buy ${product.name} Pro`}
                 </Button>
                 {product.download_url && (
                   <Button size="lg" variant="outline" asChild>
@@ -121,8 +124,8 @@ export const ProductDetail: React.FC = () => {
             </span>
             <span className="block truncate text-sm text-[var(--color-muted)]">{terms}</span>
           </p>
-          <Button size="lg" onClick={() => requireSignIn(() => setBuyOpen(true))}>
-            Buy Pro
+          <Button size="lg" disabled={comingSoon} onClick={() => requireSignIn(() => setBuyOpen(true))}>
+            {comingSoon ? 'Coming soon' : 'Buy Pro'}
           </Button>
         </div>
       </div>

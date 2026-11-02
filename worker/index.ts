@@ -93,7 +93,7 @@ app.use('/api/*', cors());
 
 // Public: only fields that are safe to show. Shared by the list and the single-product endpoint.
 const PUBLIC_PRODUCT_COLUMNS = `id, name, tagline, description_md, kind, price_paise, period, updates_months, max_devices,
-            refund_window_days, download_url, image_url, landing_url`;
+            refund_window_days, download_url, image_url, landing_url, coming_soon`;
 
 app.get('/api/products', async (c) => {
   const { results } = await c.env.DB.prepare(
@@ -219,6 +219,9 @@ app.post('/api/checkout', rateLimit('CHECKOUT_LIMITER', 'checkout'), async (c) =
 
   if (!product) {
     return c.json({ error: 'Product not found' }, 404);
+  }
+  if (product.coming_soon) {
+    return c.json({ error: 'This product is coming soon' }, 409);
   }
 
   // Stops one email from piling up unpaid orders (each one creates a Razorpay order).
