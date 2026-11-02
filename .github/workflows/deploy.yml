@@ -23,7 +23,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm build
+      - name: Build
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+        run: |
+          # Without the key the UI hides Sign in, so a deploy would break buying.
+          [ -n "$VITE_CLERK_PUBLISHABLE_KEY" ] || { echo "Set the repo variable VITE_CLERK_PUBLISHABLE_KEY"; exit 1; }
+          pnpm build
 
       - name: Apply D1 migrations (production)
         env:
