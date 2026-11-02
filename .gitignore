@@ -7,8 +7,3 @@ dist
 .env.local
 .env*.local
 backups/
-
-# Lockfiles are not committed
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
