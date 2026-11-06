@@ -27,7 +27,7 @@ export const orbitIde: ProductContent = {
     ],
   },
   faq: [
-    { q: 'Does my code leave my computer?', a: "No. The AI runs on your Mac and your code is never uploaded by Orbit. Orbit goes online only to download a model or toolchain, let Gradle fetch dependencies, upload a build you ask it to upload, and, if you turn them on, send questions to your own cloud AI (Pro). Nothing goes to Orbit's servers because there are none." },
+    { q: 'Does my code leave my computer?', a: "No. The AI runs on your Mac and your code is never uploaded by Orbit. Orbit goes online only to download a model or toolchain, let Gradle fetch dependencies, upload a build you ask it to upload, and, if you turn them on, send crash reports (app version and crash location only) or questions to your own cloud AI (Pro). Nothing else goes to Orbit." },
     { q: 'Which platforms are supported?', a: 'macOS 13 Ventura or later, Apple silicon or Intel. The on-device AI needs Apple silicon. Orbit builds Android apps today; iOS support is planned but not available yet.' },
     { q: 'What does setup need?', a: 'A JDK and the Android SDK command-line tools. The setup wizard checks for them and walks you through installing what is missing.' },
     { q: 'Why does macOS warn me when I open it?', a: 'This build is not notarized by Apple yet, so macOS warns the first time. Open System Settings, Privacy & Security, and click Open Anyway.' },
@@ -36,6 +36,11 @@ export const orbitIde: ProductContent = {
     { q: 'Which cloud AI can I use?', a: 'Optional and Pro only, with your own key: OpenAI, Claude, Gemini or any OpenAI-compatible API. Your questions go to the provider you pick; nothing goes to Orbit.' },
   ],
   changelog: [
+    {
+      version: '1.0.7',
+      date: 'November 2026',
+      notes: ['Opt-in crash reports (app version, CPU type and where it crashed) are now received; they stay off unless you say yes.'],
+    },
     {
       version: '1.0.6',
       date: 'November 2026',
