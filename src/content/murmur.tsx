@@ -28,8 +28,8 @@ export const murmur: ProductContent = {
     { q: 'Fn does nothing', a: 'Check Murmur is on under System Settings, Privacy & Security, Accessibility, then quit and reopen it.' },
     { q: 'Stopped working after an update', a: 'macOS can forget permissions for unsigned apps. Remove Murmur from Accessibility and Microphone, add it back, and reopen.' },
     { q: "Text didn't appear", a: 'Menu bar, Copy Last Dictation, then paste.' },
-    { q: 'The assistant cuts you off', a: 'Raise Pause before answering in Settings.' },
-    { q: 'It hears background noise as speech', a: 'Raise the speech threshold (speech_threshold).' },
+    { q: 'The assistant cuts you off', a: 'Raise Pause before answering in Settings, Assistant, Conversation (tap mode).' },
+    { q: 'It hears background noise as speech', a: 'Set Mic sensitivity to Low or Very low in Settings, Assistant, Conversation.' },
     { q: 'Where are the logs?', a: 'Menu bar, Open Log (~/Library/Application Support/Murmur/murmur.log). On Windows: system tray, Open Log (%APPDATA%\\Murmur\\murmur.log).' },
   ],
   changelog: [
