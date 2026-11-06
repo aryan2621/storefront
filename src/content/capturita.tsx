@@ -2,7 +2,7 @@ import type { ProductContent } from './types';
 
 export const capturita: ProductContent = {
   features: [
-    { title: 'Make every recording clear and polished', text: 'Trim, split and cut. Smooth cursor movement, springy click zooms, animated titles, custom backgrounds and clean exports.', image: '/products/capturita/editor-hero.jpg', imageAlt: 'Capturita editor playing a recording on a gradient background, with the timeline and zoom track below' },
+    { title: 'Make every recording clear and polished', text: 'Trim, split and cut. Smooth cursor movement, springy click zooms, custom backgrounds and clean exports.', image: '/products/capturita/editor-hero.jpg', imageAlt: 'Capturita editor playing a recording on a gradient background, with the timeline and zoom track below' },
     { title: 'Choose what to capture', text: 'Capture a display, window, or custom area, with microphone, system audio, or camera when you need them.', image: '/products/capturita/recordings-library.jpg', imageAlt: 'Capturita recordings library with saved Studio projects' },
     { title: 'Turn speech into finished captions', text: 'Transcribe speech on your Mac, then use AI to tighten a demo or cut a pause. Build motion-graphic scenes in Studio and review every suggested edit before applying it.', image: '/products/capturita/captions-settings.jpg', imageAlt: 'Capturita captions settings showing on-device speech models' },
   ],

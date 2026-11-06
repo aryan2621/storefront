@@ -486,7 +486,8 @@ async function handleLicenseActivation(c: Context<{ Bindings: Env; Variables: { 
     return c.json({ error: 'Product license configuration missing' }, 500);
   }
 
-  const verification = await verifyLicense(key, product_id, pubKey);
+  // build ts 0: the app itself enforces updates_until per build; expiry must not revoke the key
+  const verification = await verifyLicense(key, product_id, pubKey, 0);
   if (!verification.valid || !verification.payload) {
     return c.json({ error: 'invalid_key' }, 402);
   }
@@ -564,7 +565,8 @@ async function handleLicenseDeactivation(c: Context<{ Bindings: Env; Variables: 
   const { product_id, key, device_id } = parsed.data;
   // Only the key holder can free a seat; signed-in customers use /api/account/devices/:id instead.
   const pubKey = await resolveProductPublicKey(c.env, product_id);
-  const verification = pubKey ? await verifyLicense(key, product_id, pubKey) : null;
+  // build ts 0: the app itself enforces updates_until per build; expiry must not revoke the key
+  const verification = pubKey ? await verifyLicense(key, product_id, pubKey, 0) : null;
   if (!verification?.valid || !verification.payload) {
     return c.json({ error: 'invalid_key' }, 402);
   }

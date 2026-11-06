@@ -176,3 +176,6 @@ UPDATE products SET max_devices = 2;
 
 -- Subscriptions are not offered yet; AI Agents stays hidden until it has a one-time price.
 UPDATE products SET active = 0 WHERE id = 'ai-agents';
+
+-- Only Capturita is buyable for now; mirrors migration 0007 so a fresh DB matches. Remove a product from this list when it launches.
+UPDATE products SET coming_soon = 1 WHERE id <> 'capturita';

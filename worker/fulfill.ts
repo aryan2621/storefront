@@ -232,7 +232,7 @@ export async function fulfillOrder(
     supportEmail: env.EMAIL_REPLY_TO,
   });
 
-  await sendEmail(env, {
+  const sent = await sendEmail(env, {
     from: env.EMAIL_FROM,
     to: customer.email,
     replyTo: env.EMAIL_REPLY_TO,
@@ -240,6 +240,8 @@ export async function fulfillOrder(
     html: emailContent.html,
     text: emailContent.text,
   });
+  // License is already committed; the buyer can still fetch the key from the Success page or Account.
+  if (!sent) console.error(`Purchase email failed for payment ${paymentId}; resend the key from Admin.`);
 
   return {
     success: true,
