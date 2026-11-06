@@ -325,7 +325,10 @@ export function createAdminRouter() {
     }
 
     const licId = `lic_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    const updatesUntil = now + 365 * 86400;
+    // Calendar months, the same as paid orders (see fulfill.ts).
+    const until = new Date(now * 1000);
+    until.setUTCMonth(until.getUTCMonth() + (product.updates_months ?? 12));
+    const updatesUntil = Math.floor(until.getTime() / 1000);
     const productKey = await resolveProductPrivateKey(c.env, product_id);
     if (!productKey) {
       return c.json({ error: `No private signing key configured for product: ${product_id}` }, 500);
