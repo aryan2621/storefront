@@ -106,7 +106,7 @@ export function renderPurchaseEmail(params: {
   <div style="max-width: 580px; margin: 0 auto; background: #13151f; border: 1px solid #232736; border-radius: 12px; padding: 32px;">
     <h2 style="color: #fff;">Thank you for your purchase</h2>
     <p style="color: #9ca3af;">${params.productName} · ${formattedAmount}</p>
-    <p>Your license key is below. To activate it, open the app’s License settings (Capturita: Settings → License; Murmur: Settings → About), paste the key and choose Activate. The first activation needs the internet. Sign in to storefront with this purchase email if you need it later.</p>
+    <p>Your license key is below. To activate it, open the app’s License settings (Capturita: Settings → License; Murmur: Settings → About; Orbit: Settings → About → Manage license), paste the key and choose Activate. The first activation needs the internet. Sign in to storefront with this purchase email if you need it later.</p>
     <div style="background: #090a0f; border: 1px solid #2d3345; border-radius: 8px; padding: 16px; word-break: break-all; font-family: monospace; color: #6ee7b7;">${params.licenseKey}</div>
     ${params.downloadUrl ? `<p><a href="${params.downloadUrl}" style="color: #818cf8;">Download</a></p>` : ''}
     <p style="font-size: 12px; color: #6b7280;">Payment ID: ${params.paymentId}. Support: ${params.supportEmail}</p>
@@ -120,7 +120,7 @@ ${params.licenseKey}
 Payment ID: ${params.paymentId}
 Download: ${params.downloadUrl || 'N/A'}
 Support: ${params.supportEmail}
-To activate: open the app's License settings (Capturita: Settings → License; Murmur: Settings → About), paste the key and choose Activate. The first activation needs the internet.
+To activate: open the app's License settings (Capturita: Settings → License; Murmur: Settings → About; Orbit: Settings → About → Manage license), paste the key and choose Activate. The first activation needs the internet.
 Sign in to storefront with this email to recover the key later.`;
 
   return { subject, html, text };

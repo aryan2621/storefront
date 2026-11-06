@@ -7,7 +7,7 @@ const ROWS: [string, string][] = [
   ['murmur', 'Murmur (voice dictation)'],
   ['capturita', 'Capturita (screen recorder)'],
   ['agentic-browser', 'Agentic Browser (AI browser)'],
-  ['orbit-ide', 'Orbit IDE (iOS and Android IDE)'],
+  ['orbit-ide', 'Orbit IDE (Android IDE, iOS coming soon)'],
   ['dev-tools', 'DevTools (BigView, Relay)'],
 ];
 

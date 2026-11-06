@@ -23,17 +23,28 @@ export const orbitIde: ProductContent = {
       { title: 'If it says Orbit is damaged', text: <>If it says Orbit "is damaged and can't be opened", run this once in Terminal and open it again: <code>xattr -dr com.apple.quarantine /Applications/Orbit.app</code></> },
       { title: 'Run the setup wizard', text: 'The setup wizard checks for a JDK and the Android SDK command-line tools and walks you through installing what is missing. Open it again any time from the command palette.' },
       { title: 'Optional: choose an AI model', text: 'Choose a model in the AI panel. Models are 2 to 5 GB and download once from Hugging Face.' },
-      { title: 'Open a project', text: 'Open a Gradle project, or create one with New Android App, then press Run. iOS is not available yet. After the first install, Orbit updates itself.' },
+      { title: 'Open a project', text: 'Open a Gradle project, or create one with New Android App, then press Run. iOS is not available yet. Newer versions are published on the downloads page; Orbit does not update itself.' },
     ],
   },
   faq: [
-    { q: 'Does my code leave my computer?', a: "No. The AI runs on your Mac and your code is never uploaded by Orbit. Orbit goes online only to download a model or toolchain, let Gradle fetch dependencies, upload a build you ask it to upload, and, if you turn them on, send crash reports (app version and crash location only) or questions to your own AI endpoint (Pro). Nothing goes to Orbit's servers because there are none." },
+    { q: 'Does my code leave my computer?', a: "No. The AI runs on your Mac and your code is never uploaded by Orbit. Orbit goes online only to download a model or toolchain, let Gradle fetch dependencies, upload a build you ask it to upload, and, if you turn them on, send crash reports (app version and crash location only) or questions to your own cloud AI (Pro). Nothing goes to Orbit's servers because there are none." },
     { q: 'Which platforms are supported?', a: 'macOS 13 Ventura or later, Apple silicon or Intel. The on-device AI needs Apple silicon. Orbit builds Android apps today; iOS support is planned but not available yet.' },
     { q: 'What does setup need?', a: 'A JDK and the Android SDK command-line tools. The setup wizard checks for them and walks you through installing what is missing.' },
     { q: 'Why does macOS warn me when I open it?', a: 'This build is not notarized by Apple yet, so macOS warns the first time. Open System Settings, Privacy & Security, and click Open Anyway.' },
-    { q: 'Is there a free version?', a: 'Yes. Editing, building, running, debugging, Logcat, Git, tests and local AI chat are free. Pro adds AI edits, your own AI endpoint and the Google Play shipping tools.' },
+    { q: 'Is there a free version?', a: 'Yes. Editing, building, running, debugging, Logcat, Git, tests and local AI chat are free. Pro adds AI edits, your own cloud AI and the Google Play shipping tools. There is no trial: Free is the full editor and local AI chat.' },
+    { q: 'How does the Pro license work?', a: 'Pro is a one-time purchase with a year of updates. Paste the key in Settings, About, Manage license. It is activated online on up to two Macs and re-checked about every six hours; Orbit keeps working offline for up to 30 days after the last check (the key and a hashed Mac ID are sent). A version released after your updates end keeps working as Free until you renew. Builds from source have Pro unlocked.' },
+    { q: 'Which cloud AI can I use?', a: 'Optional and Pro only, with your own key: OpenAI, Claude, Gemini or any OpenAI-compatible API. Your questions go to the provider you pick; nothing goes to Orbit.' },
   ],
   changelog: [
+    {
+      version: '1.0.6',
+      date: 'November 2026',
+      notes: [
+        'Pro licenses now activate online on up to two Macs; a refunded key goes back to Free at the next check. Works offline for 30 days.',
+        'Cloud AI: OpenAI, Claude, Gemini or any OpenAI-compatible API, and it now works on Intel Macs and Macs with less memory too.',
+        'The 14-day trial is gone: Free is the full editor with local AI chat.',
+      ],
+    },
     {
       version: '1.0.2',
       date: 'October 2026',

@@ -6,8 +6,8 @@ INSERT INTO products (
 (
   'orbit-ide',
   'Orbit IDE',
-  'Mac IDE to build and ship iOS and Android apps, with local AI',
-  'A Tauri desktop IDE for macOS 13+ with run and debug, signing, and upload to TestFlight or Google Play, plus an on-device AI assistant that asks before changing files. Android works today; iOS support is coming soon.',
+  'Mac IDE to build and ship Android apps, with local AI (iOS coming soon)',
+  'A desktop IDE for macOS 13+ to build, run, debug and ship Android apps to Google Play, with an on-device AI assistant that asks before changing files. Free covers editing, building, debugging and local AI chat; Pro adds AI edits, your own cloud AI (OpenAI, Claude, Gemini or an OpenAI-compatible API) and the Google Play shipping tools. iOS support is coming soon.',
   'one_time',
   149900,
   NULL,
@@ -178,5 +178,6 @@ UPDATE products SET max_devices = 2;
 UPDATE products SET active = 0 WHERE id = 'ai-agents';
 
 -- Only launched products are buyable; mirrors migrations 0007 and 0008 so a fresh DB matches. Add a product here when it launches.
-UPDATE products SET coming_soon = 1 WHERE id NOT IN ('capturita', 'murmur');
+UPDATE products SET coming_soon = 1 WHERE id NOT IN ('capturita', 'murmur', 'orbit-ide');
 UPDATE products SET landing_url = 'https://murmur-site.just-a-dev.workers.dev', allowed_origins = 'https://murmur-site.just-a-dev.workers.dev' WHERE id = 'murmur';
+UPDATE products SET landing_url = 'https://orbit-site.just-a-dev.workers.dev', allowed_origins = 'https://orbit-site.just-a-dev.workers.dev' WHERE id = 'orbit-ide';

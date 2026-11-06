@@ -1,0 +1,4 @@
+-- Orbit IDE is on sale: it activates device seats here like Capturita and Murmur, and its site links back to the storefront.
+UPDATE products SET coming_soon = 0 WHERE id = 'orbit-ide';
+UPDATE products SET landing_url = 'https://orbit-site.just-a-dev.workers.dev', allowed_origins = 'https://orbit-site.just-a-dev.workers.dev' WHERE id = 'orbit-ide';
+UPDATE products SET tagline = 'Mac IDE to build and ship Android apps, with local AI (iOS coming soon)', description_md = 'A desktop IDE for macOS 13+ to build, run, debug and ship Android apps to Google Play, with an on-device AI assistant that asks before changing files. Free covers editing, building, debugging and local AI chat; Pro adds AI edits, your own cloud AI (OpenAI, Claude, Gemini or an OpenAI-compatible API) and the Google Play shipping tools. iOS support is coming soon.' WHERE id = 'orbit-ide';
