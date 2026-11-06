@@ -51,12 +51,12 @@ storefront/
 │   ├── license.ts              # WebCrypto Ed25519 signing & verification
 │   ├── razorpay.ts             # Direct fetch client & constant-time HMAC
 │   ├── fulfill.ts              # Idempotent order fulfillment engine
-│   ├── email.ts                # Transactional email sender (Resend)
+│   ├── email.ts                # Transactional email sender (Brevo, or Resend)
 │   ├── access.ts               # Cloudflare Access JWT validator
 │   ├── schema.ts               # Shared Zod validation schemas
 │   └── types.ts                # Environment bindings
 ├── migrations/
-│   └── 0001_init.sql           # D1 schema (products, customers, orders, payments, etc.)
+│   └── 000N_*.sql              # D1 schema and later changes (init, activations, clerk id, analytics, coming_soon)
 ├── seed/
 │   └── products.sql            # Catalog seed
 ├── scripts/
