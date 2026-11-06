@@ -1,0 +1,4 @@
+-- Murmur is on sale: it activates device seats here like Capturita, and its site links back to the storefront.
+UPDATE products SET coming_soon = 0 WHERE id = 'murmur';
+UPDATE products SET landing_url = 'https://murmur-site.just-a-dev.workers.dev', allowed_origins = 'https://murmur-site.just-a-dev.workers.dev' WHERE id = 'murmur';
+UPDATE products SET tagline = 'On-device voice dictation and voice assistant for Mac and Windows', description_md = 'Hold Fn to dictate into any app, or hold Right Option to ask a voice assistant that can search the web, read your screen and open apps. Speech and AI run on your computer with Whisper and Qwen3; macOS 11+, Windows in beta. Dictation is free; Pro adds the assistant, AI polish, command mode, the local API and cloud AI with your own key.' WHERE id = 'murmur';

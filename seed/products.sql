@@ -23,8 +23,8 @@ INSERT INTO products (
 (
   'murmur',
   'Murmur',
-  'On-device voice dictation and voice assistant for macOS',
-  'Hold Fn to dictate into any app, or hold Right Option to ask a voice assistant that can search the web, read your screen and open apps. Speech and AI run on your Mac with Whisper and Qwen3; macOS 11+, Windows in beta.',
+  'On-device voice dictation and voice assistant for Mac and Windows',
+  'Hold Fn to dictate into any app, or hold Right Option to ask a voice assistant that can search the web, read your screen and open apps. Speech and AI run on your computer with Whisper and Qwen3; macOS 11+, Windows in beta. Dictation is free; Pro adds the assistant, AI polish, command mode, the local API and cloud AI with your own key.',
   'one_time',
   99900,
   NULL,
@@ -177,5 +177,6 @@ UPDATE products SET max_devices = 2;
 -- Subscriptions are not offered yet; AI Agents stays hidden until it has a one-time price.
 UPDATE products SET active = 0 WHERE id = 'ai-agents';
 
--- Only Capturita is buyable for now; mirrors migration 0007 so a fresh DB matches. Remove a product from this list when it launches.
-UPDATE products SET coming_soon = 1 WHERE id <> 'capturita';
+-- Only launched products are buyable; mirrors migrations 0007 and 0008 so a fresh DB matches. Add a product here when it launches.
+UPDATE products SET coming_soon = 1 WHERE id NOT IN ('capturita', 'murmur');
+UPDATE products SET landing_url = 'https://murmur-site.just-a-dev.workers.dev', allowed_origins = 'https://murmur-site.just-a-dev.workers.dev' WHERE id = 'murmur';
