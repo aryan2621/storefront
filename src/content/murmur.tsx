@@ -20,8 +20,8 @@ export const murmur: ProductContent = {
     ],
   },
   faq: [
-    { q: 'Does my voice leave my computer?', a: 'No. Speech recognition runs on your computer. Web searches and the license check use the internet (the license check sends your key and a hashed computer ID, and Murmur then works offline for up to 30 days); optional Cloud AI sends text, not audio, to the provider you choose.' },
-    { q: 'What is free and what is Pro?', a: 'Dictation is free. Pro adds the voice assistant, AI polish, command mode, the local API and MCP, and cloud AI with your own key. A Pro key works on up to two computers and includes a year of updates.' },
+    { q: 'Does my voice leave my computer?', a: 'No. Speech recognition runs on your computer. Web searches and the license check use the internet (the license check sends your key and a hashed computer ID, and Murmur then works offline for up to 30 days); optional Cloud AI (OpenAI, Claude, Gemini or any OpenAI-compatible API, with your own key) sends text, not audio, to the provider you choose.' },
+    { q: 'What is free and what is Pro?', a: 'Dictation is free. Pro adds the voice assistant, AI polish, command mode, the local API and MCP, and cloud AI with your own key (OpenAI, Claude, Gemini or an OpenAI-compatible API). A Pro key works on up to two computers and includes a year of updates.' },
     { q: 'Which platforms are supported?', a: 'macOS 11+ (Apple silicon recommended) and a Windows beta. The Windows version has the assistant too, but not screen reading, reminders, calendar, music or tab control.' },
     { q: 'What does the first launch download?', a: "A speech model (about 550 MB, once) and, optionally, the assistant's AI (4.8 GB, or 2.4 GB for smaller Macs)." },
     { q: 'Why does macOS warn me when I open it?', a: 'Murmur is not signed with a paid Apple certificate. Open System Settings, Privacy & Security, and click Open Anyway. The install steps explain it.' },
@@ -33,6 +33,15 @@ export const murmur: ProductContent = {
     { q: 'Where are the logs?', a: 'Menu bar, Open Log (~/Library/Application Support/Murmur/murmur.log). On Windows: system tray, Open Log (%APPDATA%\\Murmur\\murmur.log).' },
   ],
   changelog: [
+    {
+      version: '0.1.3',
+      date: 'November 2026',
+      notes: [
+        'Pro licenses now activate online on up to two computers; a refunded key goes back to Free at the next check. Works offline for 30 days.',
+        'Settings, About: Remove license and Buy Pro.',
+        'Cloud AI: OpenAI, Claude, Gemini or any OpenAI-compatible API.',
+      ],
+    },
     {
       version: '0.1.0',
       date: 'October 2026',

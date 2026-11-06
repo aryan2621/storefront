@@ -24,7 +24,7 @@ INSERT INTO products (
   'murmur',
   'Murmur',
   'On-device voice dictation and voice assistant for Mac and Windows',
-  'Hold Fn to dictate into any app, or hold Right Option to ask a voice assistant that can search the web, read your screen and open apps. Speech and AI run on your computer with Whisper and Qwen3; macOS 11+, Windows in beta. Dictation is free; Pro adds the assistant, AI polish, command mode, the local API and cloud AI with your own key.',
+  'Dictation is free; Pro adds the assistant, AI polish, command mode, the local API and MCP, and cloud AI with your own key (OpenAI, Claude, Gemini or an OpenAI-compatible API). Speech and AI run on your computer with Whisper and Qwen3; macOS 11+, Windows in beta. Hold Fn to dictate into any app, or Right Option to ask a voice assistant that can search the web, read your screen and open apps.',
   'one_time',
   99900,
   NULL,
