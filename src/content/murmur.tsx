@@ -34,6 +34,15 @@ export const murmur: ProductContent = {
   ],
   changelog: [
     {
+      version: '0.1.4',
+      date: 'November 2026',
+      notes: [
+        'Pro licenses activate online on up to two computers; a refunded key goes back to Free at the next check. Works offline for 30 days.',
+        'Cloud AI: OpenAI, Claude, Gemini or any OpenAI-compatible API.',
+        'Settings, About: Remove license and Buy Pro.',
+      ],
+    },
+    {
       version: '0.1.3',
       date: 'November 2026',
       notes: [
