@@ -10,7 +10,7 @@ export const Privacy: React.FC = () => (
       {
         heading: 'What this site stores',
         body: [
-          'For a purchase, this site stores your email address, optional name and phone number, payment and order IDs, amount, dates, your licence key, and the devices it is activated on (hashed device ID, device name and last-seen time). We use it to deliver your purchase, provide support, process refunds and enforce the device limit.',
+          'For a purchase, this site stores your email address, optional name and phone number, payment and order IDs, amount, dates, your licence key, any billing state and GSTIN you provide, the Razorpay payment records we receive for your order, and the devices it is activated on (hashed device ID, device name and last-seen time). We use it to deliver your purchase, provide support, process refunds and enforce the device limit.',
           'Payment details are handled by Razorpay and are not stored here. Purchase data is not sold or used for marketing.',
         ],
       },
@@ -23,13 +23,13 @@ export const Privacy: React.FC = () => (
       {
         heading: 'Cookies and analytics',
         body: [
-          'A cookie records your cookie choice. When you sign in we keep your account email and when you last visited, whatever you choose. If you accept analytics, we also count page views and store the country you visit from (taken from Cloudflare, with no IP address stored) so we can see where our users are. If you choose necessary only, no page views or country are stored, and withdrawing consent later from Cookie settings in the footer clears your stored country. Signing in and paying work either way.',
+          'A cookie records your cookie choice, and Clerk sets its own cookies when you sign in. When you sign in we keep your account email and when you last visited, whatever you choose. If you accept analytics, we also count page views and store the country you visit from (taken from Cloudflare, with no IP address stored) so we can see where our users are. If you choose necessary only, no page views or country are stored, and withdrawing consent later from Cookie settings in the footer clears the country stored on your account (page-view counts already recorded are kept without your account details being added). Signing in and paying work either way.',
         ],
       },
       {
         heading: 'Services we use',
         body: [
-          'Razorpay processes payments. Clerk handles sign-in to your account, and purchase emails are sent through Brevo, so your email address is shared with them for those purposes. Cloudflare hosts the site and processes checkout requests; when configured, Cloudflare Turnstile helps prevent automated checkout abuse. The site does not use advertising trackers.',
+          'Razorpay processes payments. Clerk handles sign-in to your account, and purchase emails are sent through Brevo (or Resend as a fallback), so your email address is shared with them for those purposes. Cloudflare hosts the site and processes checkout requests; when configured, Cloudflare Turnstile helps prevent automated checkout abuse. Fonts load from Google Fonts and the payment window loads from Razorpay, so those services see your IP address when you visit. The site does not use advertising trackers.',
         ],
       },
       {

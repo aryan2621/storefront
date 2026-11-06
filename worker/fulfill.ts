@@ -121,7 +121,10 @@ export async function fulfillOrder(
   const now = Math.floor(Date.now() / 1000);
   const licId = `lic_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
   const updatesMonths = product.updates_months ?? 12;
-  const updatesUntil = now + (updatesMonths * 30 * 86400);
+  // Calendar months, so "12 months" is a full year.
+  const until = new Date(now * 1000);
+  until.setUTCMonth(until.getUTCMonth() + updatesMonths);
+  const updatesUntil = Math.floor(until.getTime() / 1000);
 
   let expiresAt: number | null = null;
   if (product.kind === 'subscription') {

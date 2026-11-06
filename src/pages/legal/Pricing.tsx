@@ -48,7 +48,7 @@ export const Pricing: React.FC = () => {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-xl font-extrabold">2. Taxes & GST</h2>
+        <h2 className="text-xl font-extrabold">2. Currency and delivery</h2>
         <p>
           All prices are in Indian Rupees (INR). The amount shown at checkout is the amount you pay. Your licence key is shown after checkout, emailed to you, and kept on your account page.
         </p>

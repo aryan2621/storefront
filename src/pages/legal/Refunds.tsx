@@ -21,8 +21,8 @@ export const Refunds: React.FC = () => (
       {
         heading: 'What happens next',
         body: [
-          'Refund requests are reviewed by email. Once a refund is issued, the key is marked revoked. Official builds disable it at their next successful licence check; if the service is unreachable, the app may allow up to 30 days of offline use after the last successful check.',
-          'Once approved, the refund goes back to your original payment method (bank account, UPI handle, or card) via Razorpay. It usually shows up within 5 to 7 business days, depending on your bank. You will get a confirmation email.',
+          'Refund requests are reviewed by email. Once a full refund is issued, or a payment dispute is lost, the key is marked revoked. A partial refund does not revoke it. Official builds disable it at their next successful licence check; if the service is unreachable, the app may allow up to 30 days of offline use after the last successful check.',
+          'Once approved, the refund goes back to your original payment method (bank account, UPI handle, or card) via Razorpay. It usually shows up within 5 to 7 business days, depending on your bank. You will get a confirmation email from us or from Razorpay. Requests made after the refund window are at the seller’s discretion.',
         ],
       },
     ]}

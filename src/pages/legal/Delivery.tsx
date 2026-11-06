@@ -29,7 +29,7 @@ export const Delivery: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-xl font-extrabold">3. Delivery Timeline</h2>
         <p>
-          Your key is usually shown within a few seconds of payment. If the success screen closes before you save your key, sign in and open My licenses, or email {SUPPORT_EMAIL} with your Razorpay Payment ID.
+          Your key is usually shown within a few seconds of payment. If the success screen closes before you save your key, sign in and open My licenses, or email {SUPPORT_EMAIL} with your Razorpay Payment ID. If a payment notification is delayed, a daily check issues the key within about a day, and it is emailed to you.
         </p>
       </section>
 

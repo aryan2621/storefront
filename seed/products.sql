@@ -58,7 +58,7 @@ INSERT INTO products (
   'capturita',
   'Capturita',
   'Screen recorder and editor for macOS with auto-zoom and captions',
-  'Record a screen, window or area with mic, system audio and a camera bubble, then edit with click-following auto-zoom, a smoothed cursor, backgrounds and exports up to 4K at 60 fps, or GIF. Recording and core editing are free; Pro adds on-device captions, AI editing, animated titles and Studio motion graphics. Recordings stay on your Mac unless you choose to share them. Needs macOS 15+ on Apple silicon.',
+  'Record a screen, window or area with mic, system audio and a camera bubble, then edit with click-following auto-zoom, a smoothed cursor, backgrounds and exports up to 4K at 60 fps, or GIF. Recording and core editing are free; Pro adds on-device captions, AI editing, text and animated titles, and Studio motion graphics. Recordings and captions stay on your Mac; AI editing is local by default, and cloud AI and uploads are opt-in. Needs macOS 15+ on Apple silicon.',
   'one_time',
   99900,
   NULL,
@@ -67,7 +67,7 @@ INSERT INTO products (
   1,
   4,
   'https://github.com/aryan2621/capturita',
-  'https://github.com/aryan2621/downloads/releases?q=capturita',
+  'https://capturita-site.just-a-dev.workers.dev/download',
   '/apps/capturita/icon.webp',
   unixepoch()
 ),

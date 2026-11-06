@@ -88,7 +88,7 @@ export const ProductDetail: React.FC = () => {
                   <Button size="lg" variant="outline" asChild>
                     <a href={product.download_url} target="_blank" rel="noreferrer">
                       <Download className="h-4 w-4" aria-hidden />
-                      Free build
+                      Download
                     </a>
                   </Button>
                 )}
@@ -100,7 +100,7 @@ export const ProductDetail: React.FC = () => {
                   rel="noreferrer"
                   className="mt-3 inline-flex h-11 items-center gap-1.5 underline md:hidden"
                 >
-                  <Download className="h-4 w-4" aria-hidden /> Download the free build
+                  <Download className="h-4 w-4" aria-hidden /> Download
                 </a>
               )}
               {product.landing_url && (

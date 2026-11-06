@@ -10,7 +10,7 @@ export const Terms: React.FC = () => (
       {
         heading: 'What you buy',
         body: [
-          'A Pro licence is a key for one app. A one-time purchase includes the update period shown on the product page for official builds. The version you bought stays usable after that; newer official builds need a renewed key to unlock Pro.',
+          'A Pro licence is a key for one app. A one-time purchase includes the update period shown on the product page for official builds. The version you bought stays usable after that; newer official builds need a key with a later update period to unlock Pro; email support to renew.',
           'The price and update period are shown on the product page before you pay. Prices are in INR.',
         ],
       },

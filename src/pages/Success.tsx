@@ -161,7 +161,7 @@ export const Success: React.FC = () => {
           <ol className="mt-8 list-none space-y-0 border-t-2 border-[var(--color-foreground)] p-0">
             {[
               downloadUrl ? 'Download and install the app, if you haven’t already.' : 'Open the app.',
-              'Go to Settings → License and paste the key.',
+              'Open the app’s License settings (Settings → License; in Murmur, Settings → About) and paste the key.',
               'Pro unlocks immediately. The app also registers this device so you can manage it from your account.',
             ].map((step, i) => (
               <li key={step} className="flex gap-4 border-b border-[var(--color-border)] py-3">
